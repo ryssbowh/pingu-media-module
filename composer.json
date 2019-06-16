@@ -1,0 +1,29 @@
+{
+    "name": "pingu/media-module",
+    "description": "",
+    "type" : "asgard-module",
+    "authors": [
+        {
+            "name": "Boris Blondin",
+            "email": "blondin.boris@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Pingu\\Media\\Providers\\MediaServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Pingu\\Media\\": ""
+        }
+    },
+    "require": {
+        "intervention/image": "^2.4"
+    }
+}

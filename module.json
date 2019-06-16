@@ -1,0 +1,19 @@
+{
+    "name": "Media",
+    "alias": "media",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 10,
+    "providers": [
+        "Pingu\\Media\\Providers\\MediaServiceProvider",
+        "Intervention\\Image\\ImageServiceProvider"
+    ],
+    "aliases": {
+        "Media": "Pingu\\Media\\Facades\\Media"
+    },
+    "files": [
+        "functions.php"
+    ],
+    "requires": []
+}
