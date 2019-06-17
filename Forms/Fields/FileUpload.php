@@ -26,7 +26,7 @@ class FileUpload extends Field implements UploadFileContract
 	public function addValidationRules()
 	{
 		$extensions = \Media::getAvailableFileExtensions();
-		return 'file_extension:'.implode(',', $extensions);
+		return 'file_extension:'.implode(',', $extensions).'|max:'.config('media.maxFileSize');
 	}
 
 	public static function getDefaultType()

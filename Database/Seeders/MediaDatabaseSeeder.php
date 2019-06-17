@@ -101,7 +101,7 @@ class MediaDatabaseSeeder extends Seeder
                 'weight' => 3,
                 'active' => 1,
                 'deletable' => false,
-                'url' => 'media.admin.settings',
+                'url' => 'settings.admin.media',
                 'permission_id' => $perm3->id
             ], $main, $settings);
         }

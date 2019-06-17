@@ -13,6 +13,9 @@ use Pingu\Media\Entities\Media;
 |
 */
 
+/**
+ * Medias
+ */
 Route::get(Media::getAdminUri('index'), ['uses' => 'MediaController@index'])
 	->middleware('can:view media')
 	->name('media.admin.media');
@@ -22,3 +25,15 @@ Route::get(Media::getAdminUri('create'), ['uses' => 'MediaController@create'])
 Route::post(Media::getAdminUri('store'), ['uses' => 'MediaController@store'])
 	->middleware('can:upload media')
 	->name('media.admin.media.create');
+
+/**
+ * Settings
+ */
+Route::get('/settings/media', ['uses' => 'MediaSettingsController@index'])
+	->middleware('can:view media settings')
+	->name('settings.admin.media');
+Route::get('/settings/media/edit', ['uses' => 'MediaSettingsController@edit'])
+	->middleware('can:edit media settings')
+	->name('settings.admin.media.edit');
+Route::post('/settings/media/edit', ['uses' => 'MediaSettingsController@update'])
+	->middleware('can:edit media settings');

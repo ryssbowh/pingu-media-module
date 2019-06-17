@@ -23,6 +23,8 @@ class Media extends BaseModel implements JsGridableContract, HasAdminRoutesContr
 
     protected $fillable = ['name', 'extension', 'disk', 'size'];
 
+    protected $visible = ['name', 'extension', 'disk', 'size'];
+
     /**
      * inheritDoc
      */
@@ -35,6 +37,12 @@ class Media extends BaseModel implements JsGridableContract, HasAdminRoutesContr
                     'required' => true
                 ]
     		],
+            'disk' => [
+                'field' => TextInput::class
+            ],
+            'size' => [
+                'field' => TextInput::class
+            ],
     		'file' => [
     			'field' => FileUpload::class,
                 'attributes' => [
@@ -51,13 +59,25 @@ class Media extends BaseModel implements JsGridableContract, HasAdminRoutesContr
     {
     	return [
     		'name' => [
-    			'type' => JsGridText::class,
-    			'options' => [
-    				'editing' => false
-    			]
+    			'type' => JsGridText::class
     		],
+            'disk' => [
+                'type' => JsGridText::class,
+                'options' => [
+                    'editing' => false
+                ]
+            ],
+            'size' => [
+                'type' => JsGridText::class,
+                'options' => [
+                    'editing' => false
+                ]
+            ],
             'image' => [
-                'type' => JsGridMedia::class
+                'type' => JsGridMedia::class,
+                'options' => [
+                    'title' => 'Preview'
+                ]
             ]
     	];
     }
@@ -89,7 +109,6 @@ class Media extends BaseModel implements JsGridableContract, HasAdminRoutesContr
     public function validationRules()
     {
     	return [
-            'name' => 'required|string|file_name_unique:file|size:'.config('media.maxFileSize'),
             'file' => 'file'
         ];
     }
