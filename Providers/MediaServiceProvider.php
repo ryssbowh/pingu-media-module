@@ -4,6 +4,8 @@ namespace Pingu\Media\Providers;
 
 use Illuminate\Database\Eloquent\Factory;
 use Pingu\Core\Support\ModuleServiceProvider;
+use Pingu\Media\Entities\Media as MediaModel;
+use Pingu\Media\Entities\MediaType;
 use Pingu\Media\Media;
 
 class MediaServiceProvider extends ModuleServiceProvider
@@ -65,13 +67,49 @@ class MediaServiceProvider extends ModuleServiceProvider
     public function registerRules()
     {
         /**
-         * url rule that check if an uploaded file has an extension
+         * Rule that checks if an uploaded file is a defined extension
          */
         \Validator::extend('file_extension', function ($attribute, $file, $extensions, $validator) {
             $ext = $file->guessExtension();
             if(!in_array($ext, $extensions)){
                 $validator->setCustomMessages([
                     $attribute.'.file_extension' => 'Extension is not valid, valid types are ('.implode(', ', $extensions).')'
+                ]);
+                return false;
+            }
+            return true;
+        });
+
+        /**
+         * Checks if a name is unique for a media
+         */
+        \Validator::extend('unique_media_name', function ($attribute, $name, $ids, $validator) {
+            $media = MediaModel::findOrFail($ids[0]);
+            if($media->name == $name) return true;
+            return !$media->media_type->hasMediaCalled($name, $media);
+        });
+
+        /**
+         * Checks if an array of extensions is not already in use in other media types
+         */
+        \Validator::extend('unique_extensions', function ($attribute, $extensions, $ids, $validator) {
+            $ignore = null;
+            if(isset($ids[0])){
+                $ignore = MediaType::findOrFail($ids[0]);
+            }
+            $defined = \Media::getAvailableFileExtensions($ignore);
+            $duplicates = [];
+            $extensions = array_map(function($ext){
+                return trim($ext);
+            }, explode(',', trim($extensions, ', ')));
+            foreach($extensions as $ext){
+                if(in_array($ext, $defined)){
+                    $duplicates[] = $ext;
+                }
+            }
+            if($duplicates){
+                $validator->setCustomMessages([
+                    $attribute.'.unique_extensions' => 'Extensions '.implode(',', $duplicates).' are already defined in other media types'
                 ]);
                 return false;
             }

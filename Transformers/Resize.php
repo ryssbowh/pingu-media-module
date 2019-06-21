@@ -2,11 +2,17 @@
 
 namespace Pingu\Media\Transformers;
 
-use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 use Intervention\Image\ImageManagerStatic as Image;
 
-class Resize extends ImageTransformer
+class Resize extends Transformer
 {
+	/**
+	 * Process the image resizing according to options.
+	 * Will keep the image ration
+	 * 
+	 * @param  string $file
+	 * @return bool
+	 */
 	public function process(string $file)
 	{
 		if(!file_exists($file)){

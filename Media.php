@@ -41,12 +41,10 @@ class Media
 				'name' => $name,
 				'extension' => $ext,
 				'disk' => $disk,
-				'size' => $file->getSize()
+				'size' => $file->getSize(),
 			]);
 			$media->media_type()->associate($type);
 			$media->save();
-
-			$this->transformMedia($media, $styles);
 		}
 		catch(QueryException $e){
 			$diskInstance->delete($type->folder.'/'.$name.'.'.$ext);
@@ -55,27 +53,13 @@ class Media
 		return $media;
 	}
 
-	public function transformMedia(MediaModel $media, $styles = 'all')
-	{
-		if(false === $styles or !$media->isImage()) return;
-		if($styles == 'all'){
-			$styles = ImageStyle::allNames();
-		}
-		foreach($styles as $style){
-			$style = ImageStyle::findByname($style);
-			$style->createImage($media);
-		}
-	}
-
-	public function getAvailableFileExtensions()
+	public function getAvailableFileExtensions(?MediaType $ignore = null)
 	{
 		$out = [];
 		foreach(MediaType::all() as $media){
+			if(!is_null($ignore) and $media == $ignore) continue;
 			$out = array_merge($out, $media->extensions);
 		}
 		return $out;
 	}
-
-	public function cleanTmpFolder()
-	{}
 }

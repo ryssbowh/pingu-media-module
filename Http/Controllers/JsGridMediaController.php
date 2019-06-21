@@ -3,17 +3,13 @@
 namespace Pingu\Media\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Pingu\Core\Contracts\Controllers\CreatesModelContract;
-use Pingu\Core\Http\Controllers\BaseController;
-use Pingu\Core\Traits\Controllers\CreatesModel;
-use Pingu\Jsgrid\Contracts\Controllers\JsGridContract;
-use Pingu\Jsgrid\Traits\Controllers\JsGrid;
+use Pingu\Core\Entities\BaseModel;
+use Pingu\Forms\Support\Form;
+use Pingu\Jsgrid\Http\Controllers\JsGridController;
 use Pingu\Media\Entities\Media;
 
-class MediaController extends BaseController implements JsGridContract, CreatesModelContract
+class JsGridMediaController extends JsGridController
 {
-    use JsGrid, CreatesModel;
-
     /**
      * @inheritDoc
      */
@@ -57,19 +53,5 @@ class MediaController extends BaseController implements JsGridContract, CreatesM
         $options['addLink'] = Media::getAdminUri('create', true);
         
         return view('pages.listModel-jsGrid', $options);
-    }
-
-    public function store()
-    {
-        $model = new Media;
-        try{
-            $validated = $this->validateStoreRequest($model);
-        }
-        catch(\Exception $e){
-            return $this->onStoreFailure($model, $e);
-        }
-
-        \Notify::success("Media has been saved");
-        return redirect()->route('media.admin.media');
     }
 }

@@ -2,12 +2,13 @@
 
 namespace Pingu\Media\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Pingu\Core\Contracts\Controllers\HandlesAjaxModelContract;
-use Pingu\Core\Http\Controllers\BaseController;
-use Pingu\Core\Traits\Controllers\HandlesAjaxModel;
+use Pingu\Core\Http\Controllers\AjaxModelController;
 use Pingu\Media\Entities\Media;
 
-class AjaxMediaController extends BaseController{
+class AjaxMediaController extends AjaxModelController
+{
+	public function getModel():string
+	{
+		return Media::class;
+	}
 }

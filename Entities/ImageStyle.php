@@ -28,9 +28,9 @@ class ImageStyle extends BaseModel
 		return str_plural($this->machineName);
 	}
 
-	public function getImagePath(string $name)
+	public function getImagePath(Media $media)
 	{
-		return $this->getFolder().'/'.$name;
+		return $media->getFolder().'/'.$this->getFolder().'/'.$media->getName();
 	}
 
 	public static function findByName(string $name)
@@ -43,14 +43,23 @@ class ImageStyle extends BaseModel
 
 	public function deleteImage(Media $media)
 	{
-		$path = $media->media_type->folder.'/'.$this->getImagePath($media->getName());
-		$media->getDisk()::delete($path);
+		$path = $this->getImagePath($media);
+		if($media->getDisk()->exists($path)){
+			$media->getDisk()->delete($path);
+		}
 		$media->styles()->detach($this);
 	}
 
 	public function url(Media $media)
 	{
-		return $media->getDisk()::url($media->media_type->folder.'/'.$this->getImagePath($media->getName()));
+		return $media->getDisk()::url($this->getImagePath($media));
+	}
+
+	public function moveImage(Media $media)
+	{
+		$oldName = $media->getFolder().'/'.$this->getFolder().'/'.$media->getOriginal('name').'.'.$media->extension;
+		$newName = $this->getImagePath($media);
+		$media->getDisk()->move($oldName, $newName);
 	}
 
 	public function createImage(Media $media)
@@ -66,6 +75,6 @@ class ImageStyle extends BaseModel
 		$media->getDisk()->putFileAs($target, new File($tmpFile), $media->getName());
 		\Storage::disk('tmp')->delete($tmpName);
 		$media->styles()->attach($this);
-		return $target;
+		return $target.'/'.$media->getName();
 	}
 }

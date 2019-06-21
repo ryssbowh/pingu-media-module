@@ -3,16 +3,12 @@
 namespace Pingu\Media\Http\Controllers;
 
 use Illuminate\Support\Collection;
-use Pingu\Core\Http\Controllers\BaseController;
-use Pingu\Settings\Contracts\SettingsController as SettingsControllerContract;
+use Pingu\Settings\Http\Controllers\SettingsController;
 use Pingu\Settings\Http\Requests\SettingsRequest;
-use Pingu\Settings\Traits\SettingsController;
 use Route;
 
-class MediaSettingsController extends BaseController implements SettingsControllerContract
+class AdminMediaSettingsController extends SettingsController
 {
-	use SettingsController;
-
 	/**
 	 * @inheritDoc
 	 */

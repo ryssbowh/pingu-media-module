@@ -2,11 +2,8 @@
 
 namespace Pingu\Media\Transformers;
 
-use Pingu\Media\Exceptions\MediaStyleException;
-
-abstract class ImageTransformer
+abstract class Transformer
 {
-	protected $library;
 	protected $options;
 
 	public function __construct(array $options)

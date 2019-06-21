@@ -1,6 +1,7 @@
 <?php
 
 use Pingu\Media\Entities\Media;
+use Pingu\Media\Entities\MediaType;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,15 +17,38 @@ use Pingu\Media\Entities\Media;
 /**
  * Medias
  */
-Route::get(Media::getAdminUri('index'), ['uses' => 'MediaController@index'])
+Route::get(Media::getAdminUri('index'), ['uses' => 'JsGridMediaController@index'])
 	->middleware('can:view media')
 	->name('media.admin.media');
-Route::get(Media::getAdminUri('create'), ['uses' => 'MediaController@create'])
+
+Route::get(Media::getAdminUri('create'), ['uses' => 'AdminMediaController@create'])
 	->middleware('can:upload media')
 	->name('media.admin.media.create');
-Route::post(Media::getAdminUri('store'), ['uses' => 'MediaController@store'])
-	->middleware('can:upload media')
-	->name('media.admin.media.create');
+Route::post(Media::getAdminUri('store'), ['uses' => 'AdminMediaController@store'])
+	->middleware('can:upload media');
+
+Route::get(Media::getAdminUri('edit'), ['uses' => 'AdminMediaController@edit'])
+	->middleware('can:edit media');
+Route::put(Media::getAdminUri('update'), ['uses' => 'AdminMediaController@update'])
+	->middleware('can:edit media');
+
+Route::get(Media::getAdminUri('confirmDelete'), ['uses' => 'AdminMediaController@confirmDelete'])
+	->middleware('can:delete media');
+Route::delete(Media::getAdminUri('delete'), ['uses' => 'AdminMediaController@delete'])
+	->middleware('can:delete media');
+
+/**
+ * Media types
+ */
+
+Route::get(MediaType::getAdminUri('index'), ['uses' => 'JsGridMediaTypeController@index'])
+	->middleware('can:view media types')
+	->name('media.admin.mediaTypes');
+Route::get(MediaType::getAdminUri('create'), ['uses' => 'AdminMediaTypeController@create'])
+	->middleware('can:create media types')
+	->name('media.admin.mediaTypes.create');
+Route::post(MediaType::getAdminUri('store'), ['uses' => 'AdminMediaTypeController@store'])
+	->middleware('can:create media types');
 
 /**
  * Settings

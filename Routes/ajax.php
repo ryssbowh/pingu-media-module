@@ -1,6 +1,7 @@
 <?php
 
 use Pingu\Media\Entities\Media;
+use Pingu\Media\Entities\MediaType;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,5 +14,23 @@ use Pingu\Media\Entities\Media;
 |
 */
 
-Route::get(Media::getAjaxUri('index'), ['uses' => 'MediaController@jsGridIndex'])
+/**
+ * Media
+ */
+Route::get(Media::getAjaxUri('index'), ['uses' => 'JsGridMediaController@jsGridIndex'])
 	->middleware('can:view medias');
+Route::put(Media::getAjaxUri('update'), ['uses' => 'AjaxMediaController@update'])
+	->middleware('can:edit medias');
+Route::delete(Media::getAjaxUri('delete'), ['uses' => 'AjaxMediaController@delete'])
+	->middleware('can:delete medias');
+
+/**
+ * Media Types
+ */
+Route::get(MediaType::getAjaxUri('index'), ['uses' => 'JsGridMediaTypeController@jsGridIndex'])
+	->middleware('can:view media types');
+Route::put(MediaType::getAjaxUri('update'), ['uses' => 'AjaxMediaTypeController@update'])
+	->middleware('can:edit media types');
+Route::delete(MediaType::getAjaxUri('delete'), ['uses' => 'AjaxMediaTypeController@delete'])
+	->middleware('can:delete media types')
+	->middleware('deletableModel:'.MediaType::routeSlug());

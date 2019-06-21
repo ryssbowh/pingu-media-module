@@ -23,7 +23,7 @@ class Media extends BaseModel implements JsGridableContract, HasAdminRoutesContr
 
     protected $fillable = ['name', 'extension', 'disk', 'size'];
 
-    protected $visible = ['name', 'extension', 'disk', 'size'];
+    protected $visible = ['id', 'name', 'extension', 'disk', 'size'];
 
     /**
      * inheritDoc
@@ -100,7 +100,7 @@ class Media extends BaseModel implements JsGridableContract, HasAdminRoutesContr
      */
     public function formEditFields()
     {
-    	return [];
+    	return ['name'];
     }
 
     /**
@@ -109,7 +109,8 @@ class Media extends BaseModel implements JsGridableContract, HasAdminRoutesContr
     public function validationRules()
     {
     	return [
-            'file' => 'file'
+            'file' => 'required|max:'.config('media.maxFileSize'),
+            'name' => 'required|unique_media_name:'.$this->id
         ];
     }
 
@@ -118,6 +119,8 @@ class Media extends BaseModel implements JsGridableContract, HasAdminRoutesContr
      */
     public function validationMessages()
     {
-    	return [];
+    	return [
+            'name.unique_media_name' => 'This name is already in use'
+        ];
     }
 }
