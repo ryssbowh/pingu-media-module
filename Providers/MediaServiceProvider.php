@@ -57,8 +57,8 @@ class MediaServiceProvider extends ModuleServiceProvider
      */
     public function registerAssets()
     {
-        \Asset::container('modules')->add('media-js', 'module-assets/Media/js/Media.js');
-        \Asset::container('modules')->add('media-css', 'module-assets/Media/css/Media.css');
+        \Asset::container('modules')->add('media-js', 'module-assets/Media.js');
+        \Asset::container('modules')->add('media-css', 'module-assets/Media.css');
     }
 
     /**
