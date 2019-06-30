@@ -7,7 +7,7 @@ use Pingu\Settings\Http\Controllers\SettingsController;
 use Pingu\Settings\Http\Requests\SettingsRequest;
 use Route;
 
-class AdminMediaSettingsController extends SettingsController
+class MediaSettingsController extends SettingsController
 {
 	/**
 	 * @inheritDoc

@@ -5,10 +5,10 @@ namespace Pingu\Media\Http\Controllers;
 use Illuminate\Http\Request;
 use Pingu\Core\Entities\BaseModel;
 use Pingu\Forms\Support\Form;
-use Pingu\Jsgrid\Http\Controllers\JsGridController;
+use Pingu\Jsgrid\Http\Controllers\JsGridModelController;
 use Pingu\Media\Entities\Media;
 
-class JsGridMediaController extends JsGridController
+class JsGridMediaController extends JsGridModelController
 {
     /**
      * @inheritDoc

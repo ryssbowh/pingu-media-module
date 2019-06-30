@@ -1,7 +1,7 @@
 {
     "name": "Media",
     "alias": "media",
-    "description": "",
+    "description": "File uploads and image transformations",
     "keywords": [],
     "active": 1,
     "order": 10,

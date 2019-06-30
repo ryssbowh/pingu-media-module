@@ -7,7 +7,7 @@ use Pingu\Core\Http\Controllers\AdminModelController;
 use Pingu\Forms\Support\Form;
 use Pingu\Media\Entities\Media;
 
-class MediaController extends AdminModelController
+class AdminMediaController extends AdminModelController
 {
     public function getModel()
     {
