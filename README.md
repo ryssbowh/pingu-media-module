@@ -1,7 +1,5 @@
 # Media
 
-## v1.0.0
-
 ### Medias
 
 Medias are files stored on a disk. The disk can be anything defined in config (local, private, s3 etc). Each media has type (image, document etc)

@@ -1,3 +1,5 @@
+import * as h from 'PinguHelpers';
+
 const File = (() => {
 
 	let opt = {
@@ -6,7 +8,7 @@ const File = (() => {
 
 	function init()
 	{
-		console.log('Forms initialized');
+		h.log('File initialized');
 		if(opt.addMediaFields.length){
 			bindSelectFile()
 		}
