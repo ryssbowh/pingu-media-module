@@ -2,11 +2,8 @@
 
 namespace Pingu\Media\Entities;
 
-use Pingu\Core\Contracts\Models\HasAdminRoutesContract;
 use Pingu\Core\Entities\BaseModel;
-use Pingu\Core\Traits\Models\HasAdminRoutes;
-use Pingu\Core\Traits\Models\HasAjaxRoutes;
-use Pingu\Core\Traits\Models\HasRouteSlug;
+use Pingu\Core\Traits\Models\HasBasicCrudUris;
 use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Forms\Traits\Models\Formable;
 use Pingu\Jsgrid\Contracts\Models\JsGridableContract;
@@ -15,9 +12,9 @@ use Pingu\Jsgrid\Fields\Text;
 use Pingu\Jsgrid\Traits\Models\JsGridable;
 use Pingu\Media\Traits\Models\MediaTypeTrait;
 
-class MediaType extends BaseModel implements JsGridableContract, HasAdminRoutesContract
+class MediaType extends BaseModel implements JsGridableContract
 {
-    use MediaTypeTrait, Formable, JsGridable, HasAdminRoutes, HasAjaxRoutes, HasRouteSlug;
+    use MediaTypeTrait, Formable, JsGridable, HasBasicCrudUris;
 
     protected $fillable = ['name', 'machineName', 'extensions'];
 

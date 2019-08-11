@@ -17,37 +17,37 @@ use Pingu\Media\Entities\MediaType;
 /**
  * Medias
  */
-Route::get(Media::getAdminUri('index'), ['uses' => 'JsGridMediaController@index'])
+Route::get(Media::getUri('index'), ['uses' => 'JsGridMediaController@index'])
 	->middleware('can:view media')
 	->name('media.admin.media');
 
-Route::get(Media::getAdminUri('create'), ['uses' => 'AdminMediaController@create'])
+Route::get(Media::getUri('create'), ['uses' => 'AdminMediaController@create'])
 	->middleware('can:upload media')
 	->name('media.admin.media.create');
-Route::post(Media::getAdminUri('store'), ['uses' => 'AdminMediaController@store'])
+Route::post(Media::getUri('store'), ['uses' => 'AdminMediaController@store'])
 	->middleware('can:upload media');
 
-Route::get(Media::getAdminUri('edit'), ['uses' => 'AdminMediaController@edit'])
+Route::get(Media::getUri('edit'), ['uses' => 'AdminMediaController@edit'])
 	->middleware('can:edit media');
-Route::put(Media::getAdminUri('update'), ['uses' => 'AdminMediaController@update'])
+Route::put(Media::getUri('update'), ['uses' => 'AdminMediaController@update'])
 	->middleware('can:edit media');
 
-Route::get(Media::getAdminUri('confirmDelete'), ['uses' => 'AdminMediaController@confirmDelete'])
+Route::get(Media::getUri('confirmDelete'), ['uses' => 'AdminMediaController@confirmDelete'])
 	->middleware('can:delete media');
-Route::delete(Media::getAdminUri('delete'), ['uses' => 'AdminMediaController@delete'])
+Route::delete(Media::getUri('delete'), ['uses' => 'AdminMediaController@delete'])
 	->middleware('can:delete media');
 
 /**
  * Media types
  */
 
-Route::get(MediaType::getAdminUri('index'), ['uses' => 'JsGridMediaTypeController@index'])
+Route::get(MediaType::getUri('index'), ['uses' => 'JsGridMediaTypeController@index'])
 	->middleware('can:view media types')
 	->name('media.admin.mediaTypes');
-Route::get(MediaType::getAdminUri('create'), ['uses' => 'AdminMediaTypeController@create'])
+Route::get(MediaType::getUri('create'), ['uses' => 'AdminMediaTypeController@create'])
 	->middleware('can:create media types')
 	->name('media.admin.mediaTypes.create');
-Route::post(MediaType::getAdminUri('store'), ['uses' => 'AdminMediaTypeController@store'])
+Route::post(MediaType::getUri('store'), ['uses' => 'AdminMediaTypeController@store'])
 	->middleware('can:create media types');
 
 /**

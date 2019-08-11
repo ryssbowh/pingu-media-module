@@ -17,20 +17,20 @@ use Pingu\Media\Entities\MediaType;
 /**
  * Media
  */
-Route::get(Media::getAjaxUri('index'), ['uses' => 'JsGridMediaController@jsGridIndex'])
+Route::get(Media::getUri('index'), ['uses' => 'JsGridMediaController@jsGridIndex'])
 	->middleware('can:view medias');
-Route::put(Media::getAjaxUri('update'), ['uses' => 'AjaxMediaController@update'])
+Route::put(Media::getUri('update'), ['uses' => 'AjaxMediaController@update'])
 	->middleware('can:edit medias');
-Route::delete(Media::getAjaxUri('delete'), ['uses' => 'AjaxMediaController@delete'])
+Route::delete(Media::getUri('delete'), ['uses' => 'AjaxMediaController@delete'])
 	->middleware('can:delete medias');
 
 /**
  * Media Types
  */
-Route::get(MediaType::getAjaxUri('index'), ['uses' => 'JsGridMediaTypeController@jsGridIndex'])
+Route::get(MediaType::getUri('index'), ['uses' => 'JsGridMediaTypeController@jsGridIndex'])
 	->middleware('can:view media types');
-Route::put(MediaType::getAjaxUri('update'), ['uses' => 'AjaxMediaTypeController@update'])
+Route::put(MediaType::getUri('update'), ['uses' => 'AjaxMediaTypeController@update'])
 	->middleware('can:edit media types');
-Route::delete(MediaType::getAjaxUri('delete'), ['uses' => 'AjaxMediaTypeController@delete'])
+Route::delete(MediaType::getUri('delete'), ['uses' => 'AjaxMediaTypeController@delete'])
 	->middleware('can:delete media types')
 	->middleware('deletableModel:'.MediaType::routeSlug());

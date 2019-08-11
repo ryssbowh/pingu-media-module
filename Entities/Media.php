@@ -2,11 +2,8 @@
 
 namespace Pingu\Media\Entities;
 
-use Pingu\Core\Contracts\Models\HasAdminRoutesContract;
 use Pingu\Core\Entities\BaseModel;
-use Pingu\Core\Traits\Models\HasAdminRoutes;
-use Pingu\Core\Traits\Models\HasAjaxRoutes;
-use Pingu\Core\Traits\Models\HasRouteSlug;
+use Pingu\Core\Traits\Models\HasBasicCrudUris;
 use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Forms\Traits\Models\Formable;
 use Pingu\Jsgrid\Contracts\Models\JsGridableContract;
@@ -17,9 +14,9 @@ use Pingu\Media\Entities\MediaType;
 use Pingu\Media\Forms\Fields\FileUpload;
 use Pingu\Media\Traits\Models\MediaTrait;
 
-class Media extends BaseModel implements JsGridableContract, HasAdminRoutesContract
+class Media extends BaseModel implements JsGridableContract
 {
-    use MediaTrait, Formable, JsGridable, HasAdminRoutes, HasAjaxRoutes, HasRouteSlug;
+    use MediaTrait, Formable, JsGridable, HasBasicCrudUris;
 
     protected $fillable = ['name', 'extension', 'disk', 'size'];
 

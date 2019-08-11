@@ -49,7 +49,6 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->registerFactories();
         $this->registerAssets();
         $this->registerRules();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
     }
 
     /**
