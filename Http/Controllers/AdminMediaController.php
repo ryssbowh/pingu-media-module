@@ -30,7 +30,7 @@ class AdminMediaController extends AdminModelController
 
     protected function modifyEditForm(Form $form, BaseModel $media)
     {
-        $form->addDeleteButton(Media::transformAdminUri('confirmDelete', $media, true));
+        $form->addDeleteButton(Media::transformUri('confirmDelete', $media, config('core.adminPrefix')));
     }
 
     protected function onSuccessfullUpdate(BaseModel $model)
