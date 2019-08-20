@@ -50,7 +50,7 @@ class JsGridMediaTypeController extends JsGridModelController
         $options['jsgrid'] = $this->buildJsGridView($request);
         $options['title'] = 'Media Types';
         $options['canSeeAddLink'] = \Auth::user()->can('add media types');
-        $options['addLink'] = MediaType::getUri('create', config('core.adminPrefix'));
+        $options['addLink'] = MediaType::getUri('create', adminPrefix());
         
         return view('pages.listModel-jsGrid', $options);
     }

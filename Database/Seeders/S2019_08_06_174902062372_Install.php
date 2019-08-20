@@ -5,6 +5,7 @@ use Pingu\Core\Seeding\DisableForeignKeysTrait;
 use Pingu\Core\Seeding\MigratableSeeder;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\MediaType;
+use Pingu\Media\Transformers\Resize;
 use Pingu\Menu\Entities\Menu;
 use Pingu\Menu\Entities\MenuItem;
 use Pingu\Permissions\Entities\Permission;
@@ -45,18 +46,12 @@ class S2019_08_06_174902062372_Install extends MigratableSeeder
             'name' => 'Icon',
             'machineName' => 'icon',
             'deletable' => false,
-            'editable' => false,
-            'transformations' => [[
-                'class' => Resize::class,
-                'options' => [
-                    'width' => 200,
-                    'height' => 200
-                ]
-            ]]
+            'editable' => true,
+            'description' => 'Icon 200x200'
         ]);
 
         $perm3 = Permission::create(['name' => 'view media settings', 'section' => 'Media']);
-        $perm3 = Permission::create(['name' => 'edit media settings', 'section' => 'Media']);
+        Permission::create(['name' => 'edit media settings', 'section' => 'Media']);
         $perm = Permission::create(['name' => 'view medias', 'section' => 'Media']);
         Permission::create(['name' => 'add medias', 'section' => 'Media']);
         Permission::create(['name' => 'edit medias', 'section' => 'Media']);
@@ -65,6 +60,10 @@ class S2019_08_06_174902062372_Install extends MigratableSeeder
         Permission::create(['name' => 'edit media types', 'section' => 'Media']);
         Permission::create(['name' => 'add media types', 'section' => 'Media']);
         Permission::create(['name' => 'delete media types', 'section' => 'Media']);
+        Permission::create(['name' => 'add images styles', 'section' => 'Media']);
+        Permission::create(['name' => 'edit images styles', 'section' => 'Media']);
+        Permission::create(['name' => 'delete images styles', 'section' => 'Media']);
+        $perm4 = Permission::create(['name' => 'view images styles', 'section' => 'Media']);
 
         $main = Menu::where(['machineName' => 'admin-menu'])->first();
 
@@ -86,7 +85,16 @@ class S2019_08_06_174902062372_Install extends MigratableSeeder
             'permission_id' => $perm2->id
         ], $main, $media);
 
-        $settings = MenuItem::findByName('admin-menu.settings');
+        MenuItem::create([
+            'name' => 'Images Styles',
+            'weight' => 0,
+            'active' => 1,
+            'deletable' => false,
+            'url' => 'media.admin.imagesStyles',
+            'permission_id' => $perm4->id
+        ], $main, $media);
+
+        $settings = MenuItem::findByMachineName('admin-menu.settings');
         MenuItem::create([
             'name' => 'Media',
             'weight' => 3,

@@ -20,8 +20,6 @@ Only one transformer for now : Scale, which scale a image to a width/height. The
 
 A Media field is available, a disk can be selected. By default the disk will be local. The field will upload the file to the disk and create a media with the right type. If the extension is not defined in any type, the validation will fail.
 
-The type AnyType is available, to define Media fields that can have any extension.
-
 ### Validation
 
 3 new rules :

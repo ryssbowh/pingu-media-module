@@ -17,6 +17,8 @@ class M2019_08_09_180120674092_Install extends Migration
             $table->increments('id');
             $table->string('machineName')->unique();
             $table->string('name')->unique();
+            $table->integer('icon_id')->unsigned()->nullable();
+            $table->foreign('icon_id')->references('id')->on('medias')->onDelete('cascade');
             $table->boolean('deletable')->default(true);
             $table->json('extensions');
             $table->string('folder')->unique();
@@ -27,7 +29,7 @@ class M2019_08_09_180120674092_Install extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('disk');
-            $table->string('extension');
+            $table->string('filename');
             $table->integer('size');
             $table->integer('media_type_id')->unsigned();
             $table->foreign('media_type_id')->references('id')->on('media_types')->onDelete('cascade');
@@ -37,6 +39,7 @@ class M2019_08_09_180120674092_Install extends Migration
         Schema::create('image_styles', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->text('description');
             $table->string('machineName')->unique();
             $table->boolean('deletable')->default(true);
             $table->boolean('editable')->default(true);
@@ -50,6 +53,7 @@ class M2019_08_09_180120674092_Install extends Migration
             $table->foreign('image_style_id')->references('id')->on('image_styles')->onDelete('cascade');
             $table->integer('media_id')->unsigned()->index();
             $table->foreign('media_id')->references('id')->on('media')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 

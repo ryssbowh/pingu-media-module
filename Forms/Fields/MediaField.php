@@ -4,11 +4,11 @@ namespace Pingu\Media\Forms\Fields;
 
 use Illuminate\Http\UploadedFile;
 use Pingu\Forms\Support\Field;
-use Pingu\Forms\Support\Types\Integer;
-use Pingu\Media\Contracts\UploadFileContract;
-use Pingu\Media\Exceptions\MediaFieldException;
+use Pingu\Media\Contracts\MediaFieldContract;
+use Pingu\Media\Entities\Media as MediaModel;
+use Pingu\Media\Forms\Types\Media;
 
-class FileUpload extends Field implements UploadFileContract
+abstract class MediaField extends Field implements MediaFieldContract
 {
 	public function __construct(string $name, array $options = [], array $attributes = [])
 	{
@@ -23,21 +23,16 @@ class FileUpload extends Field implements UploadFileContract
 		return $media;
 	}
 
-	public function addValidationRules()
+	public function getMedia()
 	{
-		$extensions = \Media::getAvailableFileExtensions();
-		return 'file_extension:'.implode(',', $extensions).'|max:'.config('media.maxFileSize');
+		if($this->value){
+			return MediaModel::find($this->value)->first();
+		}
+		return null;
 	}
 
 	public static function getDefaultType()
 	{
-		return Integer::class;
-	}
-	/**
-	 * @inheritDoc
-	 */
-	public function getDefaultView()
-	{
-		return 'media::fields.'.$this->getType();
+		return Media::class;
 	}
 }

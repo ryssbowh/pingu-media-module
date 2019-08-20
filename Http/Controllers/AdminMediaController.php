@@ -16,24 +16,17 @@ class AdminMediaController extends AdminModelController
 
     public function store()
     {
-        $model = new Media;
-        try{
-            $this->validateStoreRequest($model);
-        }
-        catch(\Exception $e){
-            return $this->onStoreFailure($model, $e);
-        }
+        $media = new Media;
+        
+        $validated = $media->validateRequest($this->request, ['file']);
+        \Media::uploadFile($validated['file']);
 
         \Notify::success("Media has been saved");
+
         return redirect()->route('media.admin.media');
     }
 
-    protected function modifyEditForm(Form $form, BaseModel $media)
-    {
-        $form->addDeleteButton(Media::transformUri('confirmDelete', $media, config('core.adminPrefix')));
-    }
-
-    protected function onSuccessfullUpdate(BaseModel $model)
+    protected function onUpdateSuccess(BaseModel $model)
     {
         return redirect()->route('media.admin.media');
     }

@@ -4,6 +4,7 @@ namespace Pingu\Media\Http\Controllers;
 
 use Pingu\Core\Entities\BaseModel;
 use Pingu\Core\Http\Controllers\AdminModelController;
+use Pingu\Forms\Support\Form;
 use Pingu\Media\Entities\MediaType;
 
 class AdminMediaTypeController extends AdminModelController
@@ -17,6 +18,24 @@ class AdminMediaTypeController extends AdminModelController
 	 * @inheritDoc
 	 */
 	protected function performStore(BaseModel $model, array $validated)
+	{
+		$validated['extensions'] = explode(',', $validated['extensions']);
+		$model->saveWithRelations($validated);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function modifyEditForm(Form $form, BaseModel $model)
+	{
+		$field = $form->getField('extensions');
+		$field->setValue(implode(',', $field->getValue()));
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function performUpdate(BaseModel $model, array $validated)
 	{
 		$validated['extensions'] = explode(',', $validated['extensions']);
 		$model->saveWithRelations($validated);

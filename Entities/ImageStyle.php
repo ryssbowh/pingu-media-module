@@ -3,78 +3,301 @@
 namespace Pingu\Media\Entities;
 
 use Illuminate\Http\File;
+use Pingu\Core\Contracts\Models\HasContextualLinksContract;
+use Pingu\Core\Contracts\Models\HasCrudUrisContract;
 use Pingu\Core\Entities\BaseModel;
+use Pingu\Core\Traits\Models\HasBasicCrudUris;
+use Pingu\Core\Traits\Models\HasMachineName;
+use Pingu\Forms\Contracts\Models\FormableContract;
+use Pingu\Forms\Support\Fields\TextInput;
+use Pingu\Forms\Traits\Models\Formable;
 use Pingu\Media\Entities\Media;
+use Pingu\Media\Entities\MediaTransformer;
 use Pingu\Media\Exceptions\MediaStyleException;
 
-class ImageStyle extends BaseModel
+class ImageStyle extends BaseModel implements HasCrudUrisContract, FormableContract, HasContextualLinksContract
 {
-	protected $casts = [
-		'transformations' => 'json'
+	use Formable, HasBasicCrudUris, HasMachineName;
+
+	protected $fillable = ['name', 'machineName', 'description'];
+
+	protected $attributes = [
+		'description' => '',
 	];
 
-	public function images()
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function($style){
+            $style->deleteImages();
+        });
+    }
+
+    /**
+     * Transformations relationship
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+	public function transformations()
 	{
-		return $this->belongsToMany(Media::class);
+		return $this->hasMany(MediaTransformer::class)->orderBy('weight');
 	}
 
-	public static function allNames()
-	{
-		return static::all()->pluck('machineName');
-	}
+    /**
+     * Media relationship
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function medias()
+    {
+        return $this->belongsToMany(Media::class)->withTimestamps();
+    }
 
+	/**
+     * @inheritDoc
+     */
+    public function formAddFields()
+    {
+        return ['name', 'machineName', 'description'];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function formEditFields()
+    {
+        return ['name', 'description'];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function fieldDefinitions()
+    {
+        return [
+            'name' => [
+                'field' => TextInput::class,
+                'options' => [
+                    'label' => 'Name'
+                ],
+                'attributes' => [
+                    'required' => true
+                ]
+            ],
+            'description' => [
+                'field' => TextInput::class
+            ],
+            'machineName' => [
+                'field' => TextInput::class,
+                'options' => [
+                    'label' => 'Machine Name'
+                ],
+                'attributes' => [
+                    'class' => 'js-dashify',
+                    'data-dashifyfrom' => 'name',
+                    'required' => true
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function validationRules()
+    {
+        return [
+            'name' => 'required',
+            'description' => 'string',
+            'machineName' => 'required|unique:image_styles,machineName'
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function validationMessages()
+    {
+        return [
+            'name.required' => 'Name is required',
+            'machineName.required' => 'Machine Name is required',
+            'machineName.unique' => 'Machine name already exists'
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getContextualLinks(): array
+    {
+        return [
+            'edit' => [
+                'title' => 'Edit',
+                'url' => $this::makeUri('edit', [$this], adminPrefix())
+            ],
+            'transformations' => [
+                'title' => 'Transformations',
+                'url' => MediaTransformer::makeUri('index', $this, adminPrefix())
+            ]
+        ];
+    }
+
+    /**
+     * Gets and instancie all transformations for that style
+     * 
+     * @return array;
+     */
+    public function getTransformations()
+    {
+        return $this->transformations->map(function($transformation){
+            return $transformation->instance();
+        });
+    }
+
+    /**
+     * Returns the pivot of the relationship with a media
+     * 
+     * @param  Media  $media
+     * @return Illuminate\Database\Eloquent\Relations\Pivot
+     */
+    protected function getPivotWithMedia(Media $media)
+    {
+        return $media->image_styles()->wherePivot('image_style_id', '=', $this->id)->get()->first()->pivot;
+    }
+
+    /**
+     * Does this style exist for a media
+     * 
+     * @param  Media  $media
+     * @return bool
+     */
+    public function existsForMedia(Media $media)
+    {
+        return $media->image_styles->contains($this);
+    }
+
+    /**
+     * Image path for this style and a media
+     * 
+     * @param  Media  $media
+     * @return string
+     */
+    protected function imagePath(Media $media)
+    {
+        return $media->getFolder().'/'.$this->getFolder().'/'.$media->filename;
+    }
+
+    /**
+     * Get folder for this style
+     * 
+     * @return string
+     */
 	public function getFolder()
 	{
 		return str_plural($this->machineName);
 	}
 
-	public function getImagePath(Media $media)
-	{
-		return $media->getFolder().'/'.$this->getFolder().'/'.$media->getName();
-	}
+    /**
+     * Does the image exists for this style and a media
+     * 
+     * @param  Media  $media
+     * @return bool
+     */
+    public function fileExists(Media $media)
+    {
+        return $media->getDisk()->exists($this->imagePath($media));
+    }
 
-	public static function findByName(string $name)
-	{
-		if(!$style = static::where(['machineName' => $name])->first()){
-			throw MediaStyleException::notDefined($name);
-		}
-		return $style;
-	}
+    /**
+     * deletes all images associated with this style
+     */
+    public function deleteImages()
+    {
+        foreach($this->medias as $media){
+            $this->deleteImage($media);
+        }
+    }
 
+    /**
+     * Deletes an image for a media
+     * 
+     * @param  Media  $media
+     */
 	public function deleteImage(Media $media)
 	{
-		$path = $this->getImagePath($media);
-		if($media->getDisk()->exists($path)){
-			$media->getDisk()->delete($path);
-		}
-		$media->styles()->detach($this);
+		$path = $this->imagePath($media);
+        $media->getDisk()->delete($path);
 	}
 
+    /**
+     * Has this style image being generated before this style was updated
+     * 
+     * @param  Media   $media
+     * @return boolean
+     */
+    protected function isOutdated(Media $media)
+    {
+        $thisTime = $this->updated_at->timestamp;
+        $mediaTime = $this->getPivotWithMedia($media)->updated_at->timestamp;
+
+        return ($thisTime > $mediaTime);
+    }
+
+    /**
+     * Url for this style for a media.
+     * Will create the image if it doesn't exist
+     * 
+     * @param  Media  $media
+     * @return string
+     */
 	public function url(Media $media)
 	{
-		return $media->getDisk()::url($this->getImagePath($media));
+        if(!$this->existsForMedia($media) or $this->isOutdated($media)){
+            $this->createImage($media);
+        }
+		return $media->getDisk()->url($this->imagePath($media));
 	}
 
-	public function moveImage(Media $media)
-	{
-		$oldName = $media->getFolder().'/'.$this->getFolder().'/'.$media->getOriginal('name').'.'.$media->extension;
-		$newName = $this->getImagePath($media);
-		$media->getDisk()->move($oldName, $newName);
-	}
+    /**
+     * Apply the transformations to a file
+     * 
+     * @param  string $file
+     */
+    public function applyTransformations(string $file)
+    {
+        foreach($this->getTransformations() as $transformation){
+            $transformation->process($file);
+        }
+    }
 
+    /**
+     * Create an image for this style and a media.
+     * Returns the relative path of the created image
+     * 
+     * @param  Media  $media
+     * @return string|null
+     */
 	public function createImage(Media $media)
 	{
-		$tmpName = uniqid('image-', true).'.'.$media->extension;
+        if(!$media->fileExists()){
+            return;
+        }
+        //move the image to the temp disk
+		$tmpName = $media->copyToTemporaryDisk();
 		$tmpFile = temp_path($tmpName);
-		\Storage::disk('tmp')->put($tmpName, $media->getContent());
-		foreach($this->transformations as $transformation){
-			$transformer = new $transformation['class']($transformation['options']);
-			$transformer->process($tmpFile);
-		}
+		//apply transformations
+		$this->applyTransformations($tmpFile);
+        //move image from temp disk to destination disk
 		$target = $media->getFolder().'/'.$this->getFolder();
-		$media->getDisk()->putFileAs($target, new File($tmpFile), $media->getName());
+		$media->getDisk()->putFileAs($target, new File($tmpFile), $media->filename);
+        //delete image from temp disk
 		\Storage::disk('tmp')->delete($tmpName);
-		$media->styles()->attach($this);
-		return $target.'/'.$media->getName();
+        //attach media to image style
+        $this->medias()->detach($media);
+        $this->medias()->attach($media);
+        $media->load('image_styles');
+
+		return $target.'/'.$media->filename;
 	}
 }

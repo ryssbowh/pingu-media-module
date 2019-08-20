@@ -8,21 +8,64 @@ use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Forms\Traits\Models\Formable;
 use Pingu\Jsgrid\Contracts\Models\JsGridableContract;
 use Pingu\Jsgrid\Fields\ArrayToString;
+use Pingu\Jsgrid\Fields\Media;
 use Pingu\Jsgrid\Fields\Text;
 use Pingu\Jsgrid\Traits\Models\JsGridable;
-use Pingu\Media\Traits\Models\MediaTypeTrait;
+use Pingu\Media\Entities\Media as MediaModel;
+use Pingu\Media\Forms\Fields\MediaUpload;
 
 class MediaType extends BaseModel implements JsGridableContract
 {
-    use MediaTypeTrait, Formable, JsGridable, HasBasicCrudUris;
+    use Formable, JsGridable, HasBasicCrudUris;
 
-    protected $fillable = ['name', 'machineName', 'extensions'];
+    protected $fillable = ['name', 'machineName', 'extensions', 'icon'];
 
-    protected $visible = ['id', 'name', 'machineName', 'extensions', 'folder'];
+    protected $visible = ['id', 'name', 'machineName', 'extensions', 'icon'];
 
     protected $casts = [
     	'extensions' => 'json'
     ];
+
+    protected $with = ['icon'];
+
+    public static function getByExtension(string $ext)
+    {
+        return static::whereJsonContains('extensions', $ext)->first();
+    }
+
+    /**
+     * Medias relationship
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function medias()
+    {
+        return $this->hasMany(Media::class);
+    }
+
+    /**
+     * Icon relationship
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function icon()
+    {
+        return $this->belongsTo(MediaModel::class);
+    }
+
+    /**
+     * Returns the icon url for that type.
+     * If the file doesn't exist on disk, return a placeholder
+     * 
+     * @return 
+     */
+    public function urlIcon()
+    {
+        if(!$this->icon or !$this->icon->fileExists()){
+            return module_url('Media', 'not_found.jpg');
+        }
+        return $this->icon->url();
+    }
     
     /**
      * inheritDoc
@@ -52,7 +95,10 @@ class MediaType extends BaseModel implements JsGridableContract
                 'attributes' => [
                     'required' => true
                 ]
-    		]
+    		],
+            'icon' => [
+                'field' => MediaUpload::class
+            ]
     	];
     }
 
@@ -67,6 +113,9 @@ class MediaType extends BaseModel implements JsGridableContract
     		],
             'extensions' => [
                 'type' => ArrayToString::class
+            ],
+            'icon' => [
+                'type' => Media::class
             ]
     	];
     }
@@ -76,7 +125,7 @@ class MediaType extends BaseModel implements JsGridableContract
      */
     public function formAddFields()
     {
-    	return ['name', 'machineName', 'extensions'];
+    	return ['name', 'machineName', 'extensions', 'icon'];
     }
 
     /**
@@ -84,7 +133,7 @@ class MediaType extends BaseModel implements JsGridableContract
      */
     public function formEditFields()
     {
-    	return ['name', 'extensions'];
+    	return ['name', 'extensions', 'icon'];
     }
 
     /**
@@ -93,6 +142,7 @@ class MediaType extends BaseModel implements JsGridableContract
     public function validationRules()
     {
     	return [
+            'icon' => 'file',
             'extensions' => 'required|regex:/^\w+(,\w+)*$/i|unique_extensions:'.$this->id,
             'name' => 'required',
             'machineName' => 'required|unique:media_types,machineName,'.$this->id
@@ -107,6 +157,17 @@ class MediaType extends BaseModel implements JsGridableContract
     	return [
             'name.unique_media_name' => 'This name is already in use'
         ];
+    }
+
+    /**
+     * Transform extensions when passing to a field
+     * 
+     * @param  string $value
+     * @return string
+     */
+    public function formExtensionsAttribute(string $value)
+    {
+        return implode(',', $this->extensions);
     }
 
 }

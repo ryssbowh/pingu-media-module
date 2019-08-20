@@ -7,6 +7,7 @@ use Pingu\Core\Support\ModuleServiceProvider;
 use Pingu\Media\Entities\Media as MediaModel;
 use Pingu\Media\Entities\MediaType;
 use Pingu\Media\Media;
+use Pingu\Media\Transformers\Resize;
 
 class MediaServiceProvider extends ModuleServiceProvider
 {
@@ -49,6 +50,7 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->registerFactories();
         $this->registerAssets();
         $this->registerRules();
+        \Media::registerTransformer(Resize::class);
     }
 
     /**
