@@ -7,6 +7,7 @@ use Pingu\Core\Support\ModuleServiceProvider;
 use Pingu\Media\Entities\Media as MediaModel;
 use Pingu\Media\Entities\MediaType;
 use Pingu\Media\Media;
+use Pingu\Media\Transformers\Orientate;
 use Pingu\Media\Transformers\Resize;
 
 class MediaServiceProvider extends ModuleServiceProvider
@@ -17,11 +18,6 @@ class MediaServiceProvider extends ModuleServiceProvider
      * @var bool
      */
     protected $defer = false;
-
-    /*
-     * Where are the models located
-     */
-    protected $modelFolder = 'Entities';
 
     /**
      * Register the service provider.
@@ -43,7 +39,6 @@ class MediaServiceProvider extends ModuleServiceProvider
      */
     public function boot()
     {
-        $this->registerModelSlugs(__DIR__.'/../'.$this->modelFolder);
         $this->registerTranslations();
         $this->registerConfig();
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'media');
@@ -51,6 +46,7 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->registerAssets();
         $this->registerRules();
         \Media::registerTransformer(Resize::class);
+        \Media::registerTransformer(Orientate::class);
     }
 
     /**

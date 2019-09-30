@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class M2019_08_09_180120674092_Install extends Migration
+class M2019_08_09_180120674092_InstallMedia extends Migration
 {
     /**
      * Run the migrations.
@@ -18,7 +18,6 @@ class M2019_08_09_180120674092_Install extends Migration
             $table->string('machineName')->unique();
             $table->string('name')->unique();
             $table->integer('icon_id')->unsigned()->nullable();
-            $table->foreign('icon_id')->references('id')->on('medias')->onDelete('cascade');
             $table->boolean('deletable')->default(true);
             $table->json('extensions');
             $table->string('folder')->unique();
@@ -43,7 +42,6 @@ class M2019_08_09_180120674092_Install extends Migration
             $table->string('machineName')->unique();
             $table->boolean('deletable')->default(true);
             $table->boolean('editable')->default(true);
-            $table->json('transformations');
             $table->timestamps();
         });
 

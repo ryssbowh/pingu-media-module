@@ -23,7 +23,7 @@ Route::get(Media::getUri('index'), ['uses' => 'JsGridMediaController@index'])
 	->middleware('can:view media')
 	->name('media.admin.media');
 
-Route::get(Media::getUri('create'), ['uses' => 'AdminMediaController@create'])
+Route::get(Media::getUri('create'), ['uses' => 'AdminMediaController@create', 'friendly' => 'Admin: Upload Media'])
 	->middleware('can:upload media')
 	->name('media.admin.media.create');
 Route::post(Media::getUri('store'), ['uses' => 'AdminMediaController@store'])

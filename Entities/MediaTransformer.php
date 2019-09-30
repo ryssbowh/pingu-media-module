@@ -26,9 +26,15 @@ class MediaTransformer extends BaseModel implements HasCrudUrisContract
         static::updated(function($transformer){
             $transformer->image_style->touch();
         });
+
+        static::saving(function($transformer){
+            if(is_null($transformer->weight)){
+                $transformer->weight = $transformer::getNextWeight(['image_style_id' => $transformer->image_style->id]);
+            }
+        });
     }
 
-    public static function friendlyName()
+    public static function friendlyName(): string
     {
         return 'Media Transformation';
     }

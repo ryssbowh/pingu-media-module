@@ -18,7 +18,7 @@ class AdminMediaController extends AdminModelController
     {
         $media = new Media;
         
-        $validated = $media->validateRequest($this->request, ['file']);
+        $validated = $media->validateStoreRequest($this->request, ['file']);
         \Media::uploadFile($validated['file']);
 
         \Notify::success("Media has been saved");

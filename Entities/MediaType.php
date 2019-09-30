@@ -4,6 +4,7 @@ namespace Pingu\Media\Entities;
 
 use Pingu\Core\Entities\BaseModel;
 use Pingu\Core\Traits\Models\HasBasicCrudUris;
+use Pingu\Forms\Support\Fields\MediaUpload;
 use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Forms\Traits\Models\Formable;
 use Pingu\Jsgrid\Contracts\Models\JsGridableContract;
@@ -12,7 +13,6 @@ use Pingu\Jsgrid\Fields\Media;
 use Pingu\Jsgrid\Fields\Text;
 use Pingu\Jsgrid\Traits\Models\JsGridable;
 use Pingu\Media\Entities\Media as MediaModel;
-use Pingu\Media\Forms\Fields\MediaUpload;
 
 class MediaType extends BaseModel implements JsGridableContract
 {
