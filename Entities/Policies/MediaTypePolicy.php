@@ -2,11 +2,12 @@
 
 namespace Pingu\Media\Entities\Policies;
 
-use Pingu\User\Entities\User;
+use Pingu\Core\Support\Policy;
 use Pingu\Entity\Entities\Entity;
 use Pingu\Media\Entities\MediaType;
+use Pingu\User\Entities\User;
 
-class MediaTypePolicy
+class MediaTypePolicy extends Policy
 {
     protected function userOrGuest(?User $user)
     {
