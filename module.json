@@ -3,7 +3,7 @@
     "alias": "media",
     "description": "File uploads and image transformations",
     "keywords": [],
-    "order": 10,
+    "order": -40,
     "core": 1,
     "providers": [
         "Pingu\\Media\\Providers\\MediaServiceProvider",

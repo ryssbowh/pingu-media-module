@@ -2,21 +2,22 @@
 namespace Pingu\Media\Forms;
 
 use Pingu\Forms\Support\Fields\Hidden;
-use Pingu\Forms\Support\Fields\Select;
+use Pingu\Forms\Support\Fields\Link;
 use Pingu\Forms\Support\Fields\Submit;
-use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Forms\Support\Form;
+use Pingu\Media\Contracts\TransformerWithOptionsContract;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\MediaTransformer;
 
-class AddTransformerForm extends Form
+class CreateTransformerOptionsForm extends Form
 {
     /**
      * Bring variables in your form through the constructor :
      */
-    public function __construct(ImageStyle $style)
+    public function __construct(array $action, TransformerWithOptionsContract $transformer)
     {
-        $this->style = $style;
+        $this->transformer = $transformer;
+        $this->action = $action;
         parent::__construct();
     }
 
@@ -28,23 +29,16 @@ class AddTransformerForm extends Form
      */
     public function elements(): array
     {
-        $transformers = \Media::getTransformers();
-
-        $items = [];
-        foreach ($transformers as $transformer) {
-            $items[$transformer::getSlug()] = $transformer::getName();
-        }
-
-        return [
-            new Select(
-                'transformer',
-                [
-                    'items' => $items,
-                    'label' => false
-                ]
-            ),
-            new Submit('submit')
-        ];
+        $fields = $this->transformer->getOptionsFields();
+        $fields[] = new Submit();
+        
+        $fields[] = new Hidden(
+            '_transformer',
+            [
+                'default' => $this->transformer::getSlug()
+            ]
+        );
+        return $fields;
     }
 
     /**
@@ -54,7 +48,7 @@ class AddTransformerForm extends Form
      */
     public function method(): string
     {
-        return 'GET';
+        return 'POST';
     }
 
     /**
@@ -68,7 +62,7 @@ class AddTransformerForm extends Form
      */
     public function action(): array
     {
-        return ['url' => MediaTransformer::uris()->make('create', $this->style, adminPrefix())];
+        return $this->action;
     }
 
     /**
@@ -80,6 +74,18 @@ class AddTransformerForm extends Form
      */
     public function name(): string
     {
-        return 'media-transformer-create';
+        return 'media-add-transformer';
+    }
+
+    /**
+     * Various options that you can access in your templates/events
+     *
+     * @return array
+     */
+    public function options(): array
+    {
+        return [
+            'title' => 'Add '.$this->transformer->getName()
+        ];
     }
 }

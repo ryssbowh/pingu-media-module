@@ -3,35 +3,37 @@
 namespace Pingu\Media\Entities;
 
 use Illuminate\Http\File;
-use Pingu\Core\Contracts\Models\HasContextualLinksContract;
-use Pingu\Core\Contracts\Models\HasCrudUrisContract;
-use Pingu\Core\Entities\BaseModel;
-use Pingu\Core\Traits\Models\HasBasicCrudUris;
 use Pingu\Core\Traits\Models\HasMachineName;
-use Pingu\Forms\Contracts\Models\FormableContract;
-use Pingu\Forms\Support\Fields\TextInput;
-use Pingu\Forms\Traits\Models\Formable;
+use Pingu\Entity\Entities\Entity;
 use Pingu\Media\Entities\Media;
 use Pingu\Media\Entities\MediaTransformer;
+use Pingu\Media\Entities\Policies\ImageStylePolicy;
 use Pingu\Media\Exceptions\MediaStyleException;
 
-class ImageStyle extends BaseModel implements HasCrudUrisContract, FormableContract, HasContextualLinksContract
+class ImageStyle extends Entity
 {
-	use Formable, HasBasicCrudUris, HasMachineName;
+    use HasMachineName;
 
-	protected $fillable = ['name', 'machineName', 'description'];
+    protected $fillable = ['name', 'machineName', 'description'];
 
-	protected $attributes = [
-		'description' => '',
-	];
+    protected $attributes = [
+        'description' => '',
+    ];
+
+    public $adminListFields = ['name', 'description'];
 
     public static function boot()
     {
         parent::boot();
 
-        static::deleted(function($style){
+        static::deleted(function ($style) {
             $style->deleteImages();
         });
+    }
+
+    public function getPolicy(): string
+    {
+        return ImageStylePolicy::class;
     }
 
     /**
@@ -39,10 +41,10 @@ class ImageStyle extends BaseModel implements HasCrudUrisContract, FormableContr
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-	public function transformations()
-	{
-		return $this->hasMany(MediaTransformer::class)->orderBy('weight');
-	}
+    public function transformations()
+    {
+        return $this->hasMany(MediaTransformer::class)->orderBy('weight');
+    }
 
     /**
      * Media relationship
@@ -54,95 +56,6 @@ class ImageStyle extends BaseModel implements HasCrudUrisContract, FormableContr
         return $this->belongsToMany(Media::class)->withTimestamps();
     }
 
-	/**
-     * @inheritDoc
-     */
-    public function formAddFields()
-    {
-        return ['name', 'machineName', 'description'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function formEditFields()
-    {
-        return ['name', 'description'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function fieldDefinitions()
-    {
-        return [
-            'name' => [
-                'field' => TextInput::class,
-                'options' => [
-                    'label' => 'Name'
-                ],
-                'attributes' => [
-                    'required' => true
-                ]
-            ],
-            'description' => [
-                'field' => TextInput::class
-            ],
-            'machineName' => [
-                'field' => TextInput::class,
-                'options' => [
-                    'label' => 'Machine Name'
-                ],
-                'attributes' => [
-                    'class' => 'js-dashify',
-                    'data-dashifyfrom' => 'name',
-                    'required' => true
-                ]
-            ]
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function validationRules()
-    {
-        return [
-            'name' => 'required',
-            'description' => 'string',
-            'machineName' => 'required|unique:image_styles,machineName'
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function validationMessages()
-    {
-        return [
-            'name.required' => 'Name is required',
-            'machineName.required' => 'Machine Name is required',
-            'machineName.unique' => 'Machine name already exists'
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getContextualLinks(): array
-    {
-        return [
-            'edit' => [
-                'title' => 'Edit',
-                'url' => $this::makeUri('edit', [$this], adminPrefix())
-            ],
-            'transformations' => [
-                'title' => 'Transformations',
-                'url' => MediaTransformer::makeUri('index', $this, adminPrefix())
-            ]
-        ];
-    }
-
     /**
      * Gets and instancie all transformations for that style
      * 
@@ -150,7 +63,7 @@ class ImageStyle extends BaseModel implements HasCrudUrisContract, FormableContr
      */
     public function getTransformations()
     {
-        return $this->transformations->map(function($transformation){
+        return $this->transformations->map(function ($transformation) {
             return $transformation->instance();
         });
     }
@@ -193,10 +106,10 @@ class ImageStyle extends BaseModel implements HasCrudUrisContract, FormableContr
      * 
      * @return string
      */
-	public function getFolder()
-	{
-		return str_plural($this->machineName);
-	}
+    public function getFolder()
+    {
+        return str_plural($this->machineName);
+    }
 
     /**
      * Does the image exists for this style and a media
@@ -214,7 +127,7 @@ class ImageStyle extends BaseModel implements HasCrudUrisContract, FormableContr
      */
     public function deleteImages()
     {
-        foreach($this->medias as $media){
+        foreach ($this->medias as $media) {
             $this->deleteImage($media);
         }
     }
@@ -222,13 +135,13 @@ class ImageStyle extends BaseModel implements HasCrudUrisContract, FormableContr
     /**
      * Deletes an image for a media
      * 
-     * @param  Media  $media
+     * @param Media  $media
      */
-	public function deleteImage(Media $media)
-	{
-		$path = $this->imagePath($media);
+    public function deleteImage(Media $media)
+    {
+        $path = $this->imagePath($media);
         $media->getDisk()->delete($path);
-	}
+    }
 
     /**
      * Has this style image being generated before this style was updated
@@ -251,13 +164,13 @@ class ImageStyle extends BaseModel implements HasCrudUrisContract, FormableContr
      * @param  Media  $media
      * @return string
      */
-	public function url(Media $media)
-	{
+    public function url(Media $media)
+    {
         if(!$this->existsForMedia($media) or $this->isOutdated($media)){
             $this->createImage($media);
         }
-		return $media->getDisk()->url($this->imagePath($media));
-	}
+        return $media->getDisk()->url($this->imagePath($media));
+    }
 
     /**
      * Apply the transformations to a file
@@ -278,26 +191,26 @@ class ImageStyle extends BaseModel implements HasCrudUrisContract, FormableContr
      * @param  Media  $media
      * @return string|null
      */
-	public function createImage(Media $media)
-	{
+    public function createImage(Media $media)
+    {
         if(!$media->fileExists()){
             return;
         }
         //move the image to the temp disk
-		$tmpName = $media->copyToTemporaryDisk();
-		$tmpFile = temp_path($tmpName);
-		//apply transformations
-		$this->applyTransformations($tmpFile);
+        $tmpName = $media->copyToTemporaryDisk();
+        $tmpFile = temp_path($tmpName);
+        //apply transformations
+        $this->applyTransformations($tmpFile);
         //move image from temp disk to destination disk
-		$target = $media->getFolder().'/'.$this->getFolder();
-		$media->getDisk()->putFileAs($target, new File($tmpFile), $media->filename);
+        $target = $media->getFolder().'/'.$this->getFolder();
+        $media->getDisk()->putFileAs($target, new File($tmpFile), $media->filename);
         //delete image from temp disk
-		\Storage::disk('tmp')->delete($tmpName);
+        \Storage::disk('tmp')->delete($tmpName);
         //attach media to image style
         $this->medias()->detach($media);
         $this->medias()->attach($media);
         $media->load('image_styles');
 
-		return $target.'/'.$media->filename;
-	}
+        return $target.'/'.$media->filename;
+    }
 }

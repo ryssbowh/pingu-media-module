@@ -8,11 +8,11 @@ use Pingu\Media\Entities\MediaTransformer;
 
 interface TransformerWithOptionsContract extends TransformerContract
 {
-	public function getOptionsDefinitions();
+    public function getOptionsFields();
 
-	public function getValidationRules();
+    public function getValidationRules();
 
-	public function getValidationMessages();
+    public function getValidationMessages();
 
-	public function getOption($key);
+    public function getOption($key);
 }

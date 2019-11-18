@@ -2,36 +2,48 @@
 
 namespace Pingu\Media\Entities;
 
-use Pingu\Core\Contracts\Models\HasCrudUrisContract;
 use Pingu\Core\Entities\BaseModel;
-use Pingu\Core\Traits\Models\HasBasicCrudUris;
 use Pingu\Core\Traits\Models\HasWeight;
+use Pingu\Entity\Entities\Entity;
 use Pingu\Forms\Support\Fields\TextInput;
+use Pingu\Forms\Support\FormRepository;
+use Pingu\Media\Entities\Forms\MediaTransformerForms;
 use Pingu\Media\Entities\ImageStyle;
+use Pingu\Media\Entities\Policies\MediaTransformerPolicy;
 
-class MediaTransformer extends BaseModel implements HasCrudUrisContract
+class MediaTransformer extends Entity
 {
-    use HasBasicCrudUris, HasWeight;
+    use HasWeight;
 
     protected $fillable = ['class', 'options', 'weight'];
 
     protected $casts = [
-    	'options' => 'json'
+        'options' => 'json'
     ];
 
     public static function boot()
     {
         parent::boot();
 
-        static::updated(function($transformer){
+        static::updated(function ($transformer) {
             $transformer->image_style->touch();
         });
 
-        static::saving(function($transformer){
-            if(is_null($transformer->weight)){
+        static::saving(function ($transformer) {
+            if (is_null($transformer->weight)) {
                 $transformer->weight = $transformer::getNextWeight(['image_style_id' => $transformer->image_style->id]);
             }
         });
+    }
+
+    public function forms(): FormRepository
+    {
+        return new MediaTransformerForms($this);
+    }
+
+    public function getPolicy(): string
+    {
+        return MediaTransformerPolicy::class;
     }
 
     public static function friendlyName(): string
@@ -49,25 +61,4 @@ class MediaTransformer extends BaseModel implements HasCrudUrisContract
         $class = $this->class;
         return new $class($this);
     }
-
-    public static function indexUri()
-    {
-        return ImageStyle::routeSlug().'/{'.ImageStyle::routeSlug().'}/transformations';
-    }
-
-    public static function createUri()
-    {
-        return self::routeSlug().'/{'.ImageStyle::routeSlug().'}/create';
-    }
-
-    public static function storeUri()
-    {
-        return self::routeSlug().'/{'.ImageStyle::routeSlug().'}';
-    }
-
-    public static function patchUri()
-    {
-        return self::routeSlugs().'/{'.ImageStyle::routeSlug().'}';
-    }
-
 }

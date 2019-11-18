@@ -10,7 +10,7 @@ use Pingu\Menu\Entities\Menu;
 use Pingu\Menu\Entities\MenuItem;
 use Pingu\Permissions\Entities\Permission;
 
-class S2019_08_06_174902062372_Install extends MigratableSeeder
+class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
 {
     use DisableForeignKeysTrait;
 

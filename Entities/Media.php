@@ -2,28 +2,22 @@
 
 namespace Pingu\Media\Entities;
 
-use Pingu\Core\Entities\BaseModel;
-use Pingu\Core\Traits\Models\HasBasicCrudUris;
-use Pingu\Forms\Support\Fields\MediaUpload;
-use Pingu\Forms\Support\Fields\TextInput;
-use Pingu\Forms\Traits\Models\Formable;
-use Pingu\Jsgrid\Contracts\Models\JsGridableContract;
-use Pingu\Jsgrid\Fields\FileSize;
-use Pingu\Jsgrid\Fields\Media as JsGridMedia;
-use Pingu\Jsgrid\Fields\Text as JsGridText;
-use Pingu\Jsgrid\Traits\Models\JsGridable;
+use Pingu\Entity\Entities\Entity;
+use Pingu\Forms\Support\FormRepository;
+use Pingu\Media\Entities\Forms\MediaForms;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\MediaType;
+use Pingu\Media\Entities\Policies\MediaPolicy;
 
-class Media extends BaseModel implements JsGridableContract
+class Media extends Entity
 {
-    use Formable, JsGridable, HasBasicCrudUris;
-
     protected $fillable = ['name', 'filename', 'disk', 'size'];
 
     protected $visible = ['id', 'name', 'filename', 'disk', 'size', 'media_type'];
 
     protected $with = ['image_styles'];
+
+    public $adminListFields = ['name', 'filename', 'disk', 'size', 'media_type', 'image'];
     /**
      * booter. Register events to delete files when media is handled.
      */
@@ -31,87 +25,56 @@ class Media extends BaseModel implements JsGridableContract
     {
         parent::boot();
 
-        static::updating(function($media){
-            if($media->isDirty('name')){
-                if($media::nameExists($media->name, $media)){
+        static::updating(function ($media) {
+            if ($media->isDirty('name')) {
+                if ($media::nameExists($media->name, $media)) {
                     throw MediaException::nameExists($media->name);
                 }
             }
         });
-        static::created(function($media){
-            if(config('media.stylesCreationStrategy', 'lazy') == 'eager'){
+        static::created(function ($media) {
+            if (config('media.stylesCreationStrategy', 'lazy') == 'eager') {
                 $media->createStyles();
             }
         });
-        static::deleted(function($media){
+        static::deleted(function ($media) {
             $media->deleteFile();
         });
     }
-
-    /**
-     * inheritDoc
-     */
-    public function fieldDefinitions()
+    
+    public function forms(): FormRepository
     {
-    	return [
-    		'name' => [
-    			'field' => TextInput::class,
-                'attributes' => [
-                    'required' => true
-                ]
-    		],
-            'filename' => [
-                'field' => TextInput::class,
-                'attributes' => [
-                    'required' => true
-                ]
-            ],
-            'disk' => [
-                'field' => TextInput::class
-            ],
-            'size' => [
-                'field' => TextInput::class
-            ],
-    		'file' => [
-    			'field' => MediaUpload::class,
-                'attributes' => [
-                    'required' => true
-                ]
-    		]
-    	];
+        return new MediaForms($this);
     }
 
-    /**
-     * inheritDoc
-     */
-    public function jsGridFields()
+    public function getPolicy(): string
     {
-    	return [
-    		'name' => [
-    			'type' => JsGridText::class
-    		],
-            'filename' => [
-                'type' => JsGridText::class,
-                'options' => [
-                    'editing' => false
-                ]
-            ],
-            'disk' => [
-                'type' => JsGridText::class,
-                'options' => [
-                    'editing' => false
-                ]
-            ],
-            'size' => [
-                'type' => FileSize::class
-            ],
-            'image' => [
-                'type' => JsGridMedia::class,
-                'options' => [
-                    'title' => 'Preview'
-                ]
-            ]
-    	];
+        return MediaPolicy::class;
+    }
+
+    public static function getMedia_typeFriendlyName()
+    {
+        return 'Type';
+    }
+
+    public static function getImageFriendlyName()
+    {
+        return 'Image';
+    }
+
+    public function getMedia_typeFriendlyValue()
+    {
+        return $this->media_type->name;
+    }
+
+    public function getSizeFriendlyValue()
+    {
+        return friendly_size($this->size);
+    }
+
+    public function getImageFriendlyValue()
+    {
+        return '<img src="'.$this->urlIcon().'" alt="'.$this->name.'">';
     }
 
     /**
@@ -122,50 +85,17 @@ class Media extends BaseModel implements JsGridableContract
     public function toArray()
     {
         $array = parent::toArray();
-        $array['image']['media'] = $this->url();
-        $array['image']['icon'] = $this->urlIcon();
+        if ($this->exists) {
+            $array['image']['media'] = $this->url();
+            $array['image']['icon'] = $this->urlIcon();
+        }
         return $array;
-    }
-
-    /**
-     * inheritDoc
-     */
-    public function formAddFields()
-    {
-    	return ['file'];
-    }
-
-    /**
-     * inheritDoc
-     */
-    public function formEditFields()
-    {
-    	return ['name'];
-    }
-
-    /**
-     * inheritDoc
-     */
-    public function validationRules()
-    {
-    	return [
-            'file' => 'required|max:'.config('media.maxFileSize'),
-            'name' => 'required'
-        ];
-    }
-
-    /**
-     * inheritDoc
-     */
-    public function validationMessages()
-    {
-    	return [];
     }
 
     public static function generateUniqueFileName(string $name)
     {
         $media = static::where('filename', '=' , $name)->first();
-        if($media){
+        if ($media) {
             $elems = explode('.', $name);
             $ext = $elems[sizeof($elems)-1];
             unset($elems[sizeof($elems)-1]);
@@ -267,8 +197,9 @@ class Media extends BaseModel implements JsGridableContract
     /**
      * Force download of this media
      * 
-     * @param  string|null $name
-     * @param  array       $headers
+     * @param string|null $name
+     * @param array       $headers
+     * 
      * @return StreamedResponse
      */
     public function download(?string $name = null, array $headers = [])
@@ -297,8 +228,8 @@ class Media extends BaseModel implements JsGridableContract
     protected function urlStyle(string $style, array $fallbacks = [])
     {
         array_unshift($fallbacks, $style);
-        foreach($fallbacks as $styleName){
-            if($style = ImageStyle::findByMachineName($styleName)){
+        foreach ($fallbacks as $styleName) {
+            if ($style = ImageStyle::findByMachineName($styleName)) {
                 return $style->url($this);
             }
         }
@@ -308,19 +239,40 @@ class Media extends BaseModel implements JsGridableContract
     /**
      * Gets this media url, for images a style can be given
      * 
-     * @param  string|null $style
-     * @param  array       $fallbacks
+     * @param string|null $style
+     * @param array       $fallbacks
+     * 
      * @return string
      */
     public function url(?string $style = null, array $fallbacks = [])
     {
-        if(!$this->fileExists()){
+        if (!$this->fileExists()) {
             return $this->media_type->urlIcon();
         }
-        if(!is_null($style) and $this->isImage()){
+        if (!is_null($style) and $this->isImage()) {
             return $this->urlStyle($style, $fallbacks);
         }
         return $this->getDisk()->url($this->getPath());
+    }
+
+    /**
+     * Gets this media img tag
+     * 
+     * @param string|null $style
+     * @param array       $fallbacks
+     * 
+     * @return string
+     */
+    public function img(?string $style = null, array $fallbacks = [])
+    {
+        if (!$this->fileExists()) {
+            $url = $this->media_type->urlIcon();
+        } else if (!is_null($style) and $this->isImage()) {
+            $url = $this->urlStyle($style, $fallbacks);
+        } else {
+            $url = $this->getDisk()->url($this->getPath());
+        }
+        return '<img src="'.$url.'" alt="'.$this->name.'">';
     }
 
     /**
@@ -330,7 +282,7 @@ class Media extends BaseModel implements JsGridableContract
      */
     public function urlIcon()
     {
-        if($this->isImage()){
+        if ($this->isImage()) {
             return $this->url('icon');
         }
         return $this->media_type->urlIcon();
@@ -383,7 +335,7 @@ class Media extends BaseModel implements JsGridableContract
      */
     protected function deleteStyles()
     {
-        if(!$this->isImage()) return;
+        if (!$this->isImage()) return;
         $this->image_styles->each(function($style){
             $style->deleteImage($this);
         });

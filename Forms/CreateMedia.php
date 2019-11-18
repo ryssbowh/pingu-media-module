@@ -1,22 +1,18 @@
 <?php
 namespace Pingu\Media\Forms;
 
-use Pingu\Forms\Support\Fields\Hidden;
-use Pingu\Forms\Support\Fields\Select;
+use Pingu\Forms\Support\Fields\SelectMedia;
 use Pingu\Forms\Support\Fields\Submit;
-use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Forms\Support\Form;
-use Pingu\Media\Entities\ImageStyle;
-use Pingu\Media\Entities\MediaTransformer;
 
-class AddTransformerForm extends Form
+class CreateMedia extends Form
 {
     /**
      * Bring variables in your form through the constructor :
      */
-    public function __construct(ImageStyle $style)
+    public function __construct(array $action)
     {
-        $this->style = $style;
+        $this->action = $action;
         parent::__construct();
     }
 
@@ -28,22 +24,9 @@ class AddTransformerForm extends Form
      */
     public function elements(): array
     {
-        $transformers = \Media::getTransformers();
-
-        $items = [];
-        foreach ($transformers as $transformer) {
-            $items[$transformer::getSlug()] = $transformer::getName();
-        }
-
         return [
-            new Select(
-                'transformer',
-                [
-                    'items' => $items,
-                    'label' => false
-                ]
-            ),
-            new Submit('submit')
+            new SelectMedia('file'),
+            new Submit
         ];
     }
 
@@ -54,7 +37,7 @@ class AddTransformerForm extends Form
      */
     public function method(): string
     {
-        return 'GET';
+        return 'POST';
     }
 
     /**
@@ -68,7 +51,7 @@ class AddTransformerForm extends Form
      */
     public function action(): array
     {
-        return ['url' => MediaTransformer::uris()->make('create', $this->style, adminPrefix())];
+        return $this->action;
     }
 
     /**
@@ -80,6 +63,6 @@ class AddTransformerForm extends Form
      */
     public function name(): string
     {
-        return 'media-transformer-create';
+        return 'create-media';
     }
 }

@@ -4,20 +4,23 @@ namespace Pingu\Media\Providers;
 
 use Illuminate\Database\Eloquent\Factory;
 use Pingu\Core\Support\ModuleServiceProvider;
+use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\Media as MediaModel;
+use Pingu\Media\Entities\MediaTransformer;
 use Pingu\Media\Entities\MediaType;
+use Pingu\Media\Infos\MediaInfo;
 use Pingu\Media\Media;
 use Pingu\Media\Transformers\Orientate;
 use Pingu\Media\Transformers\Resize;
 
 class MediaServiceProvider extends ModuleServiceProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
+    protected $entities = [
+        MediaModel::class,
+        MediaType::class,
+        ImageStyle::class,
+        MediaTransformer::class
+    ];
 
     /**
      * Register the service provider.
@@ -30,6 +33,7 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(EventServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
+        $this->registerEntities($this->entities);
     }
 
     /**
@@ -47,6 +51,7 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->registerRules();
         \Media::registerTransformer(Resize::class);
         \Media::registerTransformer(Orientate::class);
+        \Infos::registerProvider(MediaInfo::class);
     }
 
     /**
@@ -105,7 +110,7 @@ class MediaServiceProvider extends ModuleServiceProvider
                     $duplicates[] = $ext;
                 }
             }
-            if($duplicates){
+            if ($duplicates) {
                 $validator->setCustomMessages([
                     $attribute.'.unique_extensions' => 'Extensions '.implode(',', $duplicates).' are already defined in other media types'
                 ]);
