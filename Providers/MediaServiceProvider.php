@@ -4,6 +4,7 @@ namespace Pingu\Media\Providers;
 
 use Illuminate\Database\Eloquent\Factory;
 use Pingu\Core\Support\ModuleServiceProvider;
+use Pingu\Media\Config\MediaSettings;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\Media as MediaModel;
 use Pingu\Media\Entities\MediaTransformer;
@@ -34,6 +35,7 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->app->register(EventServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
         $this->registerEntities($this->entities);
+        \Settings::register(new MediaSettings, $this->app);
     }
 
     /**

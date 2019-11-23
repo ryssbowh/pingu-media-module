@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\Model;
 use Pingu\Core\Seeding\DisableForeignKeysTrait;
 use Pingu\Core\Seeding\MigratableSeeder;
+use Pingu\Media\Config\MediaSettings;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\MediaType;
 use Pingu\Media\Transformers\Resize;
@@ -21,25 +22,14 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
     {
         Model::unguard();
 
-        \Settings::registerMany([
-            'media.maxFileSize' => [
-                'Title' => 'Upload max file size',
-                'Section' => 'media',
-                'field' => NumberInput::class, 
-                'type' => Integer::class,
-                'unit' => 'Kb',
-                'validation' => 'required|integer|max:'.upload_max_filesize(),
-                'attributes' => ['required' => true, 'max' => upload_max_filesize()],
-                'weight' => 0
-            ]
-        ]);
+        \Settings::repository('media')->create();
 
         MediaType::create([
             'machineName' => 'image',
             'name' => 'Image',
             'folder' => 'images',
             'deletable' => false,
-            'extensions' => ['jpeg', 'jpg', 'png', 'gif']
+            'extensions' => 'jpeg,jpg,png,gif'
         ]);
 
         ImageStyle::create([
