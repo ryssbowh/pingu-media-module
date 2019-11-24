@@ -3,10 +3,30 @@
 namespace Pingu\Media\Config;
 
 use Pingu\Core\Settings\SettingsRepository;
-use Pingu\Forms\Support\Fields\NumberInput;
+use Pingu\Field\BaseFields\Integer;
+use Pingu\Field\BaseFields\_List;
 
 class MediaSettings extends SettingsRepository
 {
+    protected $accessPermission = 'view media settings';
+    protected $editPermission = 'view media settings';
+    protected $titles = [
+        'media.maxFileSize' => 'Upload max file size',
+        'media.stylesCreationStrategy' => 'Media creation strategy'
+    ];
+    protected $keys = ['media.maxFileSize', 'media.stylesCreationStrategy'];
+    protected $units = [
+        'media.maxFileSize' => 'Kb'
+    ];
+
+    protected function validations(): array
+    {
+        return [
+            'media_maxFileSize' => 'required|integer|min:0|max:'.upload_max_filesize(),
+            'media_stylesCreationStrategy' => 'string|in:lazy,eager'
+        ];
+    }
+
     /**
      * @inheritDoc
      */
@@ -26,89 +46,27 @@ class MediaSettings extends SettingsRepository
     /**
      * @inheritDoc
      */
-    public function accessPermissions(): array 
-    {
-        return ['view media settings'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function editPermissions(): array 
-    {
-        return ['edit media settings'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function titles(): array
-    {
-        return [
-            'media.maxFileSize' => 'Upload max file size'
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function keys(): array
-    {
-        return ['media.maxFileSize'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function validations(): array
-    {
-        return [
-            'media_maxFileSize' => 'required|integer|min:0|max:'.upload_max_filesize()
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function messages(): array
-    {
-        return [
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function units(): array
-    {
-        return [
-            'media.maxFileSize' => 'Kb'
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function helpers(): array
-    {
-        return [
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
     protected function fields(): array
     {
         return [
-            new NumberInput(
+            new Integer(
                 'media.maxFileSize',
                 [
                     'label' => $this->getFieldLabel('media.maxFileSize'),
-                    'required' => true
-                ],
+                    'required' => true,
+                    'max' => upload_max_filesize(),
+                    'min' => 0
+                ]
+            ),
+            new _List(
+                'media.stylesCreationStrategy',
                 [
-                    'max' => upload_max_filesize()
+                    'label' => $this->getFieldLabel('media.stylesCreationStrategy'),
+                    'items' => [
+                        'lazy' => 'Lazy : Create styles when media is requested',
+                        'eager' => 'Eager : Create styles when media is created',
+                    ],
+                    'required' => true
                 ]
             )
         ];

@@ -40,8 +40,6 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
             'description' => 'Icon 200x200'
         ]);
 
-        $perm3 = Permission::create(['name' => 'view media settings', 'section' => 'Media']);
-        Permission::create(['name' => 'edit media settings', 'section' => 'Media']);
         $perm = Permission::create(['name' => 'view medias', 'section' => 'Media']);
         Permission::create(['name' => 'add medias', 'section' => 'Media']);
         Permission::create(['name' => 'edit medias', 'section' => 'Media']);
@@ -55,8 +53,6 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
         Permission::create(['name' => 'delete images styles', 'section' => 'Media']);
         $perm4 = Permission::create(['name' => 'view images styles', 'section' => 'Media']);
 
-        $main = Menu::where(['machineName' => 'admin-menu'])->first();
-
         $media = MenuItem::create([
             'name' => 'Media',
             'weight' => 5,
@@ -64,7 +60,7 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
             'deletable' => false,
             'url' => 'media.admin.media',
             'permission_id' => $perm->id
-        ], $main);
+        ], 'admin-menu');
 
         MenuItem::create([
             'name' => 'Media types',
@@ -73,7 +69,7 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
             'deletable' => false,
             'url' => 'media.admin.mediaTypes',
             'permission_id' => $perm2->id
-        ], $main, $media);
+        ], 'admin-menu', $media);
 
         MenuItem::create([
             'name' => 'Images Styles',
@@ -82,17 +78,7 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
             'deletable' => false,
             'url' => 'media.admin.imagesStyles',
             'permission_id' => $perm4->id
-        ], $main, $media);
-
-        $settings = MenuItem::findByMachineName('admin-menu.settings');
-        MenuItem::create([
-            'name' => 'Media',
-            'weight' => 3,
-            'active' => 1,
-            'deletable' => false,
-            'url' => 'settings.admin.media',
-            'permission_id' => $perm3->id
-        ], $main, $settings);
+        ], 'admin-menu', $media);
     }
 
     /**
