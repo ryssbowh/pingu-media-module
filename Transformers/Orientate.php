@@ -19,7 +19,7 @@ class Orientate implements TransformerContract
      */
     public function process(string $file)
     {
-        if(!file_exists($file)){
+        if(!file_exists($file)) {
             return false;
         }
         $img = Image::make($file)->orientate()->save($file);

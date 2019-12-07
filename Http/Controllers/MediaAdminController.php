@@ -29,7 +29,7 @@ class MediaAdminController extends BaseController
 
     protected function onStoreFailure(\Exception $exception)
     {
-        if(env('APP_ENV') == 'local'){
+        if(env('APP_ENV') == 'local') {
             throw $exception;
         }
         \Notify::danger('Error while creating '.Media::friendlyName());

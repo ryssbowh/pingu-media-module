@@ -15,13 +15,15 @@ class S2019_08_13_181734635212_Transformers extends MigratableSeeder
      */
     public function run(): void
     {
-        $tr = new MediaTransformer([
+        $tr = new MediaTransformer(
+            [
             'class' => Resize::class,
             'options' => [
                 'width' => 200,
                 'height' => 200
             ]
-        ]);
+            ]
+        );
         $tr->image_style()->associate(ImageStyle::findByMachineName('icon'))->save();
     }
 

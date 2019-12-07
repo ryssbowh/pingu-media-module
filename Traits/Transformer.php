@@ -10,6 +10,7 @@ trait Transformer
 {
     /**
      * Options for this transformer
+     *
      * @var array
      */
     protected $options = [];
@@ -42,7 +43,7 @@ trait Transformer
 
     public function getOption($key = null)
     {
-        if(is_null($key)){
+        if(is_null($key)) {
             return $this->options;
         }
         return $this->options[$key] ?? null;

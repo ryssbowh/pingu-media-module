@@ -74,52 +74,65 @@ class MediaServiceProvider extends ModuleServiceProvider
         /**
          * Rule that checks if an uploaded file is a defined extension
          */
-        \Validator::extend('file_extension', function ($attribute, $file, $extensions, $validator) {
-            $ext = $file->guessExtension();
-            if(!in_array($ext, $extensions)){
-                $validator->setCustomMessages([
-                    $attribute.'.file_extension' => 'Extension is not valid, valid types are ('.implode(', ', $extensions).')'
-                ]);
-                return false;
+        \Validator::extend(
+            'file_extension', function ($attribute, $file, $extensions, $validator) {
+                $ext = $file->guessExtension();
+                if(!in_array($ext, $extensions)) {
+                    $validator->setCustomMessages(
+                        [
+                        $attribute.'.file_extension' => 'Extension is not valid, valid types are ('.implode(', ', $extensions).')'
+                        ]
+                    );
+                    return false;
+                }
+                return true;
             }
-            return true;
-        });
+        );
 
         /**
          * Checks if a name is unique for a media
          */
-        \Validator::extend('unique_media_name', function ($attribute, $name, $ids, $validator) {
-            $media = MediaModel::findOrFail($ids[0]);
-            if($media->name == $name) return true;
-            return !$media->media_type->hasMediaCalled($name, $media);
-        });
+        \Validator::extend(
+            'unique_media_name', function ($attribute, $name, $ids, $validator) {
+                $media = MediaModel::findOrFail($ids[0]);
+                if($media->name == $name) { return true;
+                }
+                return !$media->media_type->hasMediaCalled($name, $media);
+            }
+        );
 
         /**
          * Checks if an array of extensions is not already in use in other media types
          */
-        \Validator::extend('unique_extensions', function ($attribute, $extensions, $ids, $validator) {
-            $ignore = null;
-            if(isset($ids[0])){
-                $ignore = MediaType::findOrFail($ids[0]);
-            }
-            $defined = \Media::getAvailableFileExtensions($ignore);
-            $duplicates = [];
-            $extensions = array_map(function($ext){
-                return trim($ext);
-            }, explode(',', trim($extensions, ', ')));
-            foreach($extensions as $ext){
-                if(in_array($ext, $defined)){
-                    $duplicates[] = $ext;
+        \Validator::extend(
+            'unique_extensions', function ($attribute, $extensions, $ids, $validator) {
+                $ignore = null;
+                if(isset($ids[0])) {
+                    $ignore = MediaType::findOrFail($ids[0]);
                 }
+                $defined = \Media::getAvailableFileExtensions($ignore);
+                $duplicates = [];
+                $extensions = array_map(
+                    function ($ext) {
+                        return trim($ext);
+                    }, explode(',', trim($extensions, ', '))
+                );
+                foreach($extensions as $ext){
+                    if(in_array($ext, $defined)) {
+                        $duplicates[] = $ext;
+                    }
+                }
+                if ($duplicates) {
+                    $validator->setCustomMessages(
+                        [
+                        $attribute.'.unique_extensions' => 'Extensions '.implode(',', $duplicates).' are already defined in other media types'
+                        ]
+                    );
+                    return false;
+                }
+                return true;
             }
-            if ($duplicates) {
-                $validator->setCustomMessages([
-                    $attribute.'.unique_extensions' => 'Extensions '.implode(',', $duplicates).' are already defined in other media types'
-                ]);
-                return false;
-            }
-            return true;
-        });
+        );
     }
 
     /**

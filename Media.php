@@ -16,7 +16,7 @@ class Media
 
     public function registerTransformer(string $class)
     {
-        if(!$this->isTransformerRegistered($class::getSlug())){
+        if(!$this->isTransformerRegistered($class::getSlug())) {
             $this->transformers[$class::getSlug()] = $class;
         }
         else{
@@ -31,7 +31,7 @@ class Media
 
     public function getTransformer(string $slug)
     {
-        if($this->isTransformerRegistered($slug)){
+        if($this->isTransformerRegistered($slug)) {
             return $this->transformers[$slug];
         }
         throw MediaTransformerException::notRegistered($class);
@@ -50,7 +50,7 @@ class Media
     public function getMediaTypeForExtension(string $extension)
     {
         $type = MediaType::getByExtension($extension);
-        if(is_null($type)){
+        if(is_null($type)) {
             throw MediaTypeException::extensionNotDefined($extension);
         }
         return $type;
@@ -69,12 +69,14 @@ class Media
         $fileName = MediaModel::generateUniqueFileName($originalFileName);
         $diskInstance->putFileAs(config('media.folder'), $file, $fileName);
         try{
-            $media = new MediaModel([
+            $media = new MediaModel(
+                [
                 'name' => $originalName,
                 'filename' => $fileName,
                 'disk' => $disk,
                 'size' => $file->getSize(),
-            ]);
+                ]
+            );
             $media->media_type()->associate($type);
             $media->save();
         }
@@ -91,7 +93,8 @@ class Media
     {
         $out = [];
         foreach (MediaType::all() as $media){
-            if (!is_null($ignore) and $media == $ignore) continue;
+            if (!is_null($ignore) and $media == $ignore) { continue;
+            }
             $out = array_merge($out, $media->extensions);
         }
         return $out;

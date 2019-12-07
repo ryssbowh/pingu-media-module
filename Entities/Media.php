@@ -25,21 +25,27 @@ class Media extends Entity
     {
         parent::boot();
 
-        static::updating(function ($media) {
-            if ($media->isDirty('name')) {
-                if ($media::nameExists($media->name, $media)) {
-                    throw MediaException::nameExists($media->name);
+        static::updating(
+            function ($media) {
+                if ($media->isDirty('name')) {
+                    if ($media::nameExists($media->name, $media)) {
+                        throw MediaException::nameExists($media->name);
+                    }
                 }
             }
-        });
-        static::created(function ($media) {
-            if (config('media.stylesCreationStrategy', 'lazy') == 'eager') {
-                $media->createStyles();
+        );
+        static::created(
+            function ($media) {
+                if (config('media.stylesCreationStrategy', 'lazy') == 'eager') {
+                    $media->createStyles();
+                }
             }
-        });
-        static::deleted(function ($media) {
-            $media->deleteFile();
-        });
+        );
+        static::deleted(
+            function ($media) {
+                $media->deleteFile();
+            }
+        );
     }
     
     public function forms(): FormRepository
@@ -94,14 +100,14 @@ class Media extends Entity
 
     public static function generateUniqueFileName(string $name)
     {
-        $media = static::where('filename', '=' , $name)->first();
+        $media = static::where('filename', '=', $name)->first();
         if ($media) {
             $elems = explode('.', $name);
             $ext = $elems[sizeof($elems)-1];
             unset($elems[sizeof($elems)-1]);
             $name = implode('.', $elems);
             $elems = explode('-', $name);
-            if(sizeof($elems) > 1 and is_numeric($elems[sizeof($elems)-1])){
+            if(sizeof($elems) > 1 and is_numeric($elems[sizeof($elems)-1])) {
                 $number = $elems[sizeof($elems)-1] + 1;
                 unset($elems[sizeof($elems)-1]);
                 $elems[] = $number;
@@ -313,11 +319,13 @@ class Media extends Entity
      */
     public function createStyles()
     {
-        if($this->isImage()){
+        if($this->isImage()) {
             $media = $this;
-            ImageStyle::all()->each(function($style) use ($media){
-                $style->createImage($media);
-            });
+            ImageStyle::all()->each(
+                function ($style) use ($media) {
+                    $style->createImage($media);
+                }
+            );
         }
     }
 
@@ -335,10 +343,13 @@ class Media extends Entity
      */
     protected function deleteStyles()
     {
-        if (!$this->isImage()) return;
-        $this->image_styles->each(function($style){
-            $style->deleteImage($this);
-        });
+        if (!$this->isImage()) { return;
+        }
+        $this->image_styles->each(
+            function ($style) {
+                $style->deleteImage($this);
+            }
+        );
     }
 
     /**

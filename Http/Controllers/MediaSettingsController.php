@@ -9,28 +9,28 @@ use Route;
 
 class MediaSettingsController extends SettingsController
 {
-	/**
-	 * @inheritDoc
-	 */
-	public function getSection()
-	{
-		return request()->segments()[2];
-	}
+    /**
+     * @inheritDoc
+     */
+    public function getSection()
+    {
+        return request()->segments()[2];
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getUpdateRoute()
-	{
-		return route_by_name('settings.admin.media.edit');
-	}
+    /**
+     * @inheritDoc
+     */
+    public function getUpdateRoute()
+    {
+        return route_by_name('settings.admin.media.edit');
+    }
 
-	/**
+    /**
      * @inheritDoc
      */
     public function afterUpdatingSettings(SettingsRequest $request, Collection $settings)
     {
-    	return redirect()->route('settings.admin.media');
+        return redirect()->route('settings.admin.media');
     }
 
     /**
@@ -38,6 +38,6 @@ class MediaSettingsController extends SettingsController
      */
     public function canEdit()
     {
-    	return \Auth::user()->hasPermissionTo('edit media settings');
+        return \Auth::user()->hasPermissionTo('edit media settings');
     }
 }

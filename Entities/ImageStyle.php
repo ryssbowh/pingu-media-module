@@ -26,9 +26,11 @@ class ImageStyle extends Entity
     {
         parent::boot();
 
-        static::deleted(function ($style) {
-            $style->deleteImages();
-        });
+        static::deleted(
+            function ($style) {
+                $style->deleteImages();
+            }
+        );
     }
 
     public function getPolicy(): string
@@ -63,15 +65,17 @@ class ImageStyle extends Entity
      */
     public function getTransformations()
     {
-        return $this->transformations->map(function ($transformation) {
-            return $transformation->instance();
-        });
+        return $this->transformations->map(
+            function ($transformation) {
+                return $transformation->instance();
+            }
+        );
     }
 
     /**
      * Returns the pivot of the relationship with a media
      * 
-     * @param  Media  $media
+     * @param  Media $media
      * @return Illuminate\Database\Eloquent\Relations\Pivot
      */
     protected function getPivotWithMedia(Media $media)
@@ -82,7 +86,7 @@ class ImageStyle extends Entity
     /**
      * Does this style exist for a media
      * 
-     * @param  Media  $media
+     * @param  Media $media
      * @return bool
      */
     public function existsForMedia(Media $media)
@@ -93,7 +97,7 @@ class ImageStyle extends Entity
     /**
      * Image path for this style and a media
      * 
-     * @param  Media  $media
+     * @param  Media $media
      * @return string
      */
     protected function imagePath(Media $media)
@@ -114,7 +118,7 @@ class ImageStyle extends Entity
     /**
      * Does the image exists for this style and a media
      * 
-     * @param  Media  $media
+     * @param  Media $media
      * @return bool
      */
     public function fileExists(Media $media)
@@ -135,7 +139,7 @@ class ImageStyle extends Entity
     /**
      * Deletes an image for a media
      * 
-     * @param Media  $media
+     * @param Media $media
      */
     public function deleteImage(Media $media)
     {
@@ -146,7 +150,7 @@ class ImageStyle extends Entity
     /**
      * Has this style image being generated before this style was updated
      * 
-     * @param  Media   $media
+     * @param  Media $media
      * @return boolean
      */
     protected function isOutdated(Media $media)
@@ -161,12 +165,12 @@ class ImageStyle extends Entity
      * Url for this style for a media.
      * Will create the image if it doesn't exist
      * 
-     * @param  Media  $media
+     * @param  Media $media
      * @return string
      */
     public function url(Media $media)
     {
-        if(!$this->existsForMedia($media) or $this->isOutdated($media)){
+        if(!$this->existsForMedia($media) or $this->isOutdated($media)) {
             $this->createImage($media);
         }
         return $media->getDisk()->url($this->imagePath($media));
@@ -175,7 +179,7 @@ class ImageStyle extends Entity
     /**
      * Apply the transformations to a file
      * 
-     * @param  string $file
+     * @param string $file
      */
     public function applyTransformations(string $file)
     {
@@ -188,12 +192,12 @@ class ImageStyle extends Entity
      * Create an image for this style and a media.
      * Returns the relative path of the created image
      * 
-     * @param  Media  $media
+     * @param  Media $media
      * @return string|null
      */
     public function createImage(Media $media)
     {
-        if(!$media->fileExists()){
+        if(!$media->fileExists()) {
             return;
         }
         //move the image to the temp disk

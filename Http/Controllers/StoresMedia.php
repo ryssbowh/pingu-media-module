@@ -33,7 +33,8 @@ trait StoresMedia
     }
 
     protected function beforeStore()
-    {}
+    {
+    }
 
     abstract protected function onStoreFailure(\Exception $e);
 

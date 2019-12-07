@@ -25,15 +25,19 @@ class MediaTransformer extends Entity
     {
         parent::boot();
 
-        static::updated(function ($transformer) {
-            $transformer->image_style->touch();
-        });
-
-        static::saving(function ($transformer) {
-            if (is_null($transformer->weight)) {
-                $transformer->weight = $transformer::getNextWeight(['image_style_id' => $transformer->image_style->id]);
+        static::updated(
+            function ($transformer) {
+                $transformer->image_style->touch();
             }
-        });
+        );
+
+        static::saving(
+            function ($transformer) {
+                if (is_null($transformer->weight)) {
+                    $transformer->weight = $transformer::getNextWeight(['image_style_id' => $transformer->image_style->id]);
+                }
+            }
+        );
     }
 
     public function forms(): FormRepository

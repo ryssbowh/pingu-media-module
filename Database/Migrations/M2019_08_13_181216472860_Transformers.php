@@ -13,15 +13,17 @@ class M2019_08_13_181216472860_Transformers extends Migration
      */
     public function up()
     {
-        Schema::create('media_transformers', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('class');
-            $table->json('options');
-            $table->integer('weight')->unsigned();
-            $table->integer('image_style_id')->unsigned()->index();
-            $table->foreign('image_style_id')->references('id')->on('image_styles')->onDelete('cascade');
-            $table->timestamps();
-        });
+        Schema::create(
+            'media_transformers', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('class');
+                $table->json('options');
+                $table->integer('weight')->unsigned();
+                $table->integer('image_style_id')->unsigned()->index();
+                $table->foreign('image_style_id')->references('id')->on('image_styles')->onDelete('cascade');
+                $table->timestamps();
+            }
+        );
     }
 
     /**

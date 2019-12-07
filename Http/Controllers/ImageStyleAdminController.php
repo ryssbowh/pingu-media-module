@@ -16,12 +16,14 @@ class ImageStyleAdminController extends AdminEntityController
         \ContextualLinks::addFromObject($style);
         $transformations = $style->getTransformations();
         $addForm = new AddTransformerForm($style);
-        return view('media::imageTransformations')->with([
+        return view('media::imageTransformations')->with(
+            [
             'style' => $style,
             'transformations' => $transformations,
             'addForm' => $addForm,
             'patchUri' => MediaTransformer::uris()->make('patch', $style, adminPrefix())
-        ]);
+            ]
+        );
     }
 
     protected function afterEditFormCreated(Form $form, Entity $entity)
