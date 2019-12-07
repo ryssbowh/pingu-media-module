@@ -6,17 +6,26 @@ use Pingu\Info\Support\InfoProvider;
 
 class MediaInfo extends InfoProvider
 {
-    public static function slug()
+    /**
+     * @inheritDoc
+     */
+    public static function slug(): string
     {
         return 'media.infos';
     }
 
-    public static function title()
+    /**
+     * @inheritDoc
+     */
+    public static function title(): string
     {
         return 'Media';
     }
 
-    public function infos()
+    /**
+     * @inheritDoc
+     */
+    public function infos(): array
     {   
         return [
             'Files on disk' => $this->countFilesOnDisk(),
@@ -42,7 +51,10 @@ class MediaInfo extends InfoProvider
         return friendly_size($size);
     }
 
-    public function permission()
+    /**
+     * @inheritDoc
+     */
+    public function permission(): string
     {
         return 'view site';
     }
