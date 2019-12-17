@@ -107,7 +107,7 @@ class MediaServiceProvider extends ModuleServiceProvider
         \Validator::extend(
             'unique_extensions', function ($attribute, $extensions, $ids, $validator) {
                 $ignore = null;
-                if(isset($ids[0])) {
+                if (isset($ids[0])) {
                     $ignore = MediaType::findOrFail($ids[0]);
                 }
                 $defined = \Media::getAvailableFileExtensions($ignore);
@@ -117,8 +117,8 @@ class MediaServiceProvider extends ModuleServiceProvider
                         return trim($ext);
                     }, explode(',', trim($extensions, ', '))
                 );
-                foreach($extensions as $ext){
-                    if(in_array($ext, $defined)) {
+                foreach ($extensions as $ext) {
+                    if (in_array($ext, $defined)) {
                         $duplicates[] = $ext;
                     }
                 }
