@@ -10,6 +10,7 @@ use Pingu\Media\Transformers\Resize;
 use Pingu\Menu\Entities\Menu;
 use Pingu\Menu\Entities\MenuItem;
 use Pingu\Permissions\Entities\Permission;
+use Pingu\User\Entities\Role;
 
 class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
 {
@@ -45,17 +46,26 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
         );
 
         $perm = Permission::create(['name' => 'view medias', 'section' => 'Media']);
-        Permission::create(['name' => 'add medias', 'section' => 'Media']);
-        Permission::create(['name' => 'edit medias', 'section' => 'Media']);
-        Permission::create(['name' => 'delete medias', 'section' => 'Media']);
         $perm2 = Permission::create(['name' => 'view media types', 'section' => 'Media']);
-        Permission::create(['name' => 'edit media types', 'section' => 'Media']);
-        Permission::create(['name' => 'add media types', 'section' => 'Media']);
-        Permission::create(['name' => 'delete media types', 'section' => 'Media']);
-        Permission::create(['name' => 'add images styles', 'section' => 'Media']);
-        Permission::create(['name' => 'edit images styles', 'section' => 'Media']);
-        Permission::create(['name' => 'delete images styles', 'section' => 'Media']);
         $perm4 = Permission::create(['name' => 'view images styles', 'section' => 'Media']);
+
+        $admin = Role::findByName('Admin');
+        $admin->givePermissionTo([
+            $perm,
+            $perm2,
+            $perm4,
+            Permission::create(['name' => 'add medias', 'section' => 'Media']),
+            Permission::create(['name' => 'edit medias', 'section' => 'Media']),
+            Permission::create(['name' => 'delete medias', 'section' => 'Media']),
+            Permission::create(['name' => 'edit media types', 'section' => 'Media']),
+            Permission::create(['name' => 'add media types', 'section' => 'Media']),
+            Permission::create(['name' => 'delete media types', 'section' => 'Media']),
+            Permission::create(['name' => 'add images styles', 'section' => 'Media']),
+            Permission::create(['name' => 'edit images styles', 'section' => 'Media']),
+            Permission::create(['name' => 'delete images styles', 'section' => 'Media']),
+            \Settings::repository('media')->accessPermission(),
+            \Settings::repository('media')->editPermission(),
+        ]);
 
         $media = MenuItem::create(
             [
