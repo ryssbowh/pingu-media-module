@@ -56,6 +56,6 @@ class MediaInfo extends InfoProvider
      */
     public function permission(): string
     {
-        return 'view site';
+        return 'view medias infos';
     }
 }

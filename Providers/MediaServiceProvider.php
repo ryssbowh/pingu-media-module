@@ -145,6 +145,9 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../Config/config.php', 'media'
         );
+        $this->publishes([
+            __DIR__.'/../Config/config.php' => config_path('module-media.php')
+        ], 'config');
     }
 
     /**

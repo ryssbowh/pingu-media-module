@@ -45,12 +45,14 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
             ]
         );
 
+        $infos = Permission::create(['name' => 'view medias infos', 'section' => 'Media']);
         $perm = Permission::create(['name' => 'view medias', 'section' => 'Media']);
         $perm2 = Permission::create(['name' => 'view media types', 'section' => 'Media']);
         $perm4 = Permission::create(['name' => 'view images styles', 'section' => 'Media']);
 
         $admin = Role::findByName('Admin');
         $admin->givePermissionTo([
+            $infos,
             $perm,
             $perm2,
             $perm4,
