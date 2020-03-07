@@ -85,7 +85,6 @@ class Media
             
             $diskInstance->delete(config('media.folder').'/'.$fileName);
         }
-
         return $media;
     }
 

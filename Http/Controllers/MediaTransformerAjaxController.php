@@ -52,13 +52,13 @@ class MediaTransformerAjaxController extends BaseController
     {
         $form->addViewSuggestion('forms.modal')
             ->isAjax();
-        return ['form' => $form->__toString()];
+        return ['html' => $form->__toString()];
     }
 
     protected function onEditFormCreated(Form $form, Entity $entity)
     {
         $form->addViewSuggestion('forms.modal')
             ->isAjax();
-        return ['form' => $form->__toString()];
+        return ['html' => $form->__toString()];
     }
 }

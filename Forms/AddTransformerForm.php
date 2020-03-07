@@ -40,7 +40,7 @@ class AddTransformerForm extends Form
                 'transformer',
                 [
                     'items' => $items,
-                    'label' => false
+                    'showLabel' => false
                 ]
             ),
             new Submit('submit')

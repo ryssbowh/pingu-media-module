@@ -4,7 +4,7 @@ namespace Pingu\Media\Entities\Fields;
 
 use Pingu\Field\BaseFields\Text;
 use Pingu\Field\Support\FieldRepository\BaseFieldRepository;
-use Pingu\Media\Support\Fields\MediaUpload;
+use Pingu\Media\Support\Fields\Media;
 
 class MediaTypeFields extends BaseFieldRepository
 {
@@ -32,7 +32,12 @@ class MediaTypeFields extends BaseFieldRepository
                     'required' => true
                 ]
             ),
-            new MediaUpload('icon')
+            new Media(
+                'icon',
+                [
+                    'type' => 'image'
+                ]
+            )
         ];
     }
 }

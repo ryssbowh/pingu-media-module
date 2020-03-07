@@ -2,12 +2,15 @@
 
 namespace Pingu\Media\Entities;
 
+use Pingu\Core\Traits\Models\HasMachineName;
 use Pingu\Entity\Entities\Entity;
 use Pingu\Media\Entities\Media as MediaModel;
 use Pingu\Media\Entities\Policies\MediaPolicy;
 
 class MediaType extends Entity
 {
+    use HasMachineName;
+    
     protected $fillable = ['name', 'machineName', 'extensions', 'icon'];
 
     protected $visible = ['id', 'name', 'machineName', 'extensions', 'icon'];
@@ -79,7 +82,7 @@ class MediaType extends Entity
      * 
      * @return string
      */
-    public function formExtensionsAttribute(string $value)
+    public function formExtensionsAttribute($value)
     {
         return implode(',', $this->extensions);
     }

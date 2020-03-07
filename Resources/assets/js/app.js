@@ -1,5 +1,5 @@
-import File from './components/File.js';
+import Media from './components/Media.js';
 
 $(() => {
-	File.init();
+    Media.init();
 })

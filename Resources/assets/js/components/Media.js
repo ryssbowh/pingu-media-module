@@ -1,6 +1,4 @@
-import * as h from 'PinguHelpers';
-
-const File = (() => {
+const Media = (() => {
 
     let opt = {
         addMediaFields : $('.form-addModel-media input[type=file]')
@@ -8,7 +6,7 @@ const File = (() => {
 
     function init()
     {
-        h.log('File initialized');
+        Helpers.log('File initialized');
         if(opt.addMediaFields.length) {
             bindSelectFile()
         }
@@ -33,4 +31,4 @@ const File = (() => {
 
 })();
 
-export default File;
+export default Media;

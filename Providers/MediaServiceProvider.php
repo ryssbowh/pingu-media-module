@@ -3,14 +3,18 @@
 namespace Pingu\Media\Providers;
 
 use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Http\UploadedFile;
 use Pingu\Core\Support\ModuleServiceProvider;
 use Pingu\Media\Config\MediaSettings;
+use Pingu\Media\Entities\FieldMedia;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\Media as MediaModel;
 use Pingu\Media\Entities\MediaTransformer;
 use Pingu\Media\Entities\MediaType;
+use Pingu\Media\Forms\Fields\UploadMedia;
 use Pingu\Media\Infos\MediaInfo;
 use Pingu\Media\Media;
+use Pingu\Media\Support\Fields\Media as MediaField;
 use Pingu\Media\Transformers\Orientate;
 use Pingu\Media\Transformers\Resize;
 
@@ -51,9 +55,12 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->registerFactories();
         $this->registerAssets();
         $this->registerRules();
+        \FormField::registerFields(UploadMedia::class);
         \Media::registerTransformer(Resize::class);
         \Media::registerTransformer(Orientate::class);
         \Infos::registerProvider(MediaInfo::class);
+        \Field::registerBundleFields(FieldMedia::class);
+        MediaField::registerWidgets();
     }
 
     /**
