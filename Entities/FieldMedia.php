@@ -37,12 +37,29 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
     /**
      * @inheritDoc
      */
-    public function singleFormValue($value)
+    public function castSingleValueToDb($value)
     {
-        if ($value instanceof Media) {
+        return $value->id;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function castToSingleFormValue($value)
+    {
+        if ($value) {
             return $value->id;
         }
-        return $value;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function castSingleValueFromDb($value)
+    {
+        if ($value) {
+            return (int)$value;
+        }
     }
 
     /**
@@ -50,7 +67,39 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
      */
     public function castSingleValue($value)
     {
-        return Media::find($value);
+        if ($value) {
+            return Media::find($value);
+        }
+    }
+
+    /**
+     * Types accessor
+     * 
+     * @param $value
+     * 
+     * @return array
+     */
+    public function getTypesAttribute($value)
+    {
+        return array_map(function ($name) {
+            return MediaType::findByMachineName($name);
+        }, json_decode($value));
+    }
+
+    /**
+     * Get all available extensions for this field
+     * 
+     * @return array
+     */
+    public function getExtensions($withDots = false)
+    {
+        $out = [];
+        foreach ($this->types as $type) {
+            $out = array_merge($out, array_map(function ($ext) use ($withDots){
+                return $withDots ? '.'.$ext : $ext;
+            }, $type->extensions));
+        }
+        return $out;
     }
     
     /**
@@ -64,7 +113,7 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
                 'label' => $this->name(),
                 'showLabel' => false,
                 'required' => $this->required,
-                'types' => $this->types,
+                'accept' => implode(',', $this->getExtensions(true)),
                 'default' => $value
             ]
         );
@@ -75,7 +124,7 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
      */
     public function defaultValidationRule(): string
     {
-        return ($this->required ? 'required|' : '') . 'file|mimes:'.$this->getExtensions().'|max:'.$this->getMaxFileSize();
+        return ($this->required ? 'required|' : '') . 'file|mimes:'.implode(',', $this->getExtensions()).'|max:'.$this->getMaxFileSize();
     }
 
     /**
@@ -92,15 +141,5 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
     protected function getMaxFileSize()
     {
         return config('media.maxFileSize');
-    }
-
-    protected function getExtensions()
-    {
-        $extensions = [];
-        foreach ($this->types as $type) {
-            $type = MediaType::findByMachineName($type);
-            $extensions = array_merge($extensions, $type->extensions);
-        }
-        return implode(',', $extensions);
     }
 }

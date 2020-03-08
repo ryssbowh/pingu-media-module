@@ -55,12 +55,11 @@ class Media extends BaseField implements UploadsMedias
     /**
      * @inheritDoc
      */
-    public function formValue($value)
+    public function castToFormValue($value)
     {
         if ($value) {
             return (string)$value->getKey();
         }
-        return null;
     }
 
     /**
@@ -68,10 +67,9 @@ class Media extends BaseField implements UploadsMedias
      */
     public function castValue($value)
     {
-        if (!$value) {
-            return null;
+        if ($value) {
+            MediaEntity::find($value);
         }
-        return MediaEntity::findOrFail($value);
     }
 
     /**
