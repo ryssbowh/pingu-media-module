@@ -16,7 +16,7 @@ class ImageStyleAdminController extends AdminEntityController
         \ContextualLinks::addFromObject($style);
         $transformations = $style->getTransformations();
         $addForm = new AddTransformerForm($style);
-        return view('media::imageTransformations')->with(
+        return view('media.indexTransformations')->with(
             [
             'style' => $style,
             'transformations' => $transformations,
