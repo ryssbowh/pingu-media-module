@@ -51,7 +51,7 @@ class MediaServiceProvider extends ModuleServiceProvider
     {
         $this->registerTranslations();
         $this->registerConfig();
-        $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'media');
+        $this->loadModuleViewsFrom(__DIR__ . '/../Resources/views', 'media');
         $this->registerFactories();
         $this->registerAssets();
         $this->registerRules();
