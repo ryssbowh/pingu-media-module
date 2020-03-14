@@ -2,12 +2,12 @@
 
 namespace Pingu\Media\Entities\Forms;
 
-use Pingu\Forms\Support\BaseForms;
+use Pingu\Entity\Support\BaseEntityForms;
 use Pingu\Forms\Support\Form;
 use Pingu\Media\Entities\Media;
 use Pingu\Media\Forms\CreateMedia;
 
-class MediaForms extends BaseForms
+class MediaForms extends BaseEntityForms
 {
     public function create(array $args): Form
     {

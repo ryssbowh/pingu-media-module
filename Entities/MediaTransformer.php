@@ -5,8 +5,8 @@ namespace Pingu\Media\Entities;
 use Pingu\Core\Entities\BaseModel;
 use Pingu\Core\Traits\Models\HasWeight;
 use Pingu\Entity\Entities\Entity;
+use Pingu\Forms\Contracts\FormRepositoryContract;
 use Pingu\Forms\Support\Fields\TextInput;
-use Pingu\Forms\Support\FormRepository;
 use Pingu\Media\Entities\Forms\MediaTransformerForms;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\Policies\MediaTransformerPolicy;
@@ -40,7 +40,7 @@ class MediaTransformer extends Entity
         );
     }
 
-    public function forms(): FormRepository
+    public function forms(): FormRepositoryContract
     {
         return new MediaTransformerForms($this);
     }

@@ -7,23 +7,26 @@ use Illuminate\Http\UploadedFile;
 use Pingu\Core\Support\ModuleServiceProvider;
 use Pingu\Media\Config\MediaSettings;
 use Pingu\Media\Entities\FieldMedia;
-use Pingu\Media\Entities\ImageStyle;
+use Pingu\Media\Entities\ImageStyle as ImageStyleModel;
 use Pingu\Media\Entities\Media as MediaModel;
 use Pingu\Media\Entities\MediaTransformer;
-use Pingu\Media\Entities\MediaType;
+use Pingu\Media\Entities\MediaType as MediaTypeModel;
 use Pingu\Media\Forms\Fields\UploadMedia;
+use Pingu\Media\ImageStyle;
 use Pingu\Media\Infos\MediaInfo;
 use Pingu\Media\Media;
+use Pingu\Media\MediaType;
 use Pingu\Media\Support\Fields\Media as MediaField;
 use Pingu\Media\Transformers\Orientate;
 use Pingu\Media\Transformers\Resize;
+use Pingu\Media\Validation\MediaRules;
 
 class MediaServiceProvider extends ModuleServiceProvider
 {
     protected $entities = [
         MediaModel::class,
-        MediaType::class,
-        ImageStyle::class,
+        MediaTypeModel::class,
+        ImageStyleModel::class,
         MediaTransformer::class
     ];
 
@@ -35,6 +38,8 @@ class MediaServiceProvider extends ModuleServiceProvider
     public function register()
     {
         $this->app->singleton('media.media', Media::class);
+        $this->app->singleton('media.mediaType', MediaType::class);
+        $this->app->singleton('media.imageStyle', ImageStyle::class);
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(EventServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
@@ -60,7 +65,7 @@ class MediaServiceProvider extends ModuleServiceProvider
         \Media::registerTransformer(Orientate::class);
         \Infos::registerProvider(MediaInfo::class);
         \Field::registerBundleFields(FieldMedia::class);
-        MediaField::registerWidgets();
+        MediaField::register();
     }
 
     /**
@@ -78,68 +83,9 @@ class MediaServiceProvider extends ModuleServiceProvider
      */
     public function registerRules()
     {
-        /**
-         * Rule that checks if an uploaded file is a defined extension
-         */
-        \Validator::extend(
-            'file_extension', function ($attribute, $file, $extensions, $validator) {
-                $ext = $file->guessExtension();
-                if(!in_array($ext, $extensions)) {
-                    $validator->setCustomMessages(
-                        [
-                        $attribute.'.file_extension' => 'Extension is not valid, valid types are ('.implode(', ', $extensions).')'
-                        ]
-                    );
-                    return false;
-                }
-                return true;
-            }
-        );
-
-        /**
-         * Checks if a name is unique for a media
-         */
-        \Validator::extend(
-            'unique_media_name', function ($attribute, $name, $ids, $validator) {
-                $media = MediaModel::findOrFail($ids[0]);
-                if($media->name == $name) { return true;
-                }
-                return !$media->media_type->hasMediaCalled($name, $media);
-            }
-        );
-
-        /**
-         * Checks if an array of extensions is not already in use in other media types
-         */
-        \Validator::extend(
-            'unique_extensions', function ($attribute, $extensions, $ids, $validator) {
-                $ignore = null;
-                if (isset($ids[0])) {
-                    $ignore = MediaType::findOrFail($ids[0]);
-                }
-                $defined = \Media::getAvailableFileExtensions($ignore);
-                $duplicates = [];
-                $extensions = array_map(
-                    function ($ext) {
-                        return trim($ext);
-                    }, explode(',', trim($extensions, ', '))
-                );
-                foreach ($extensions as $ext) {
-                    if (in_array($ext, $defined)) {
-                        $duplicates[] = $ext;
-                    }
-                }
-                if ($duplicates) {
-                    $validator->setCustomMessages(
-                        [
-                        $attribute.'.unique_extensions' => 'Extensions '.implode(',', $duplicates).' are already defined in other media types'
-                        ]
-                    );
-                    return false;
-                }
-                return true;
-            }
-        );
+        \Validator::extend('file_extension', MediaRules::class.'@fileExtension');
+        \Validator::extend('unique_media_name', MediaRules::class.'@uniqueMediaName');
+        \Validator::extend('unique_extensions', MediaRules::class.'@uniqueExtensions');
     }
 
     /**
@@ -185,13 +131,4 @@ class MediaServiceProvider extends ModuleServiceProvider
         }
     }
 
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [];
-    }
 }

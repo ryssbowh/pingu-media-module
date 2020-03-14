@@ -13,5 +13,8 @@ return [
      * lazy  : Will not create styles at media creation, but only when the style is requested.
      *         best if styles are changed often or if styles are light transformations
      */
-    'stylesCreationStrategy' => 'lazy'
+    'stylesCreationStrategy' => 'lazy',
+    'useCache' => true, //!env('APP_DEBUG'),
+    'mediaTypeCacheKey' => 'media.types',
+    'imageStyleCacheKey' => 'media.styles'
 ];

@@ -24,7 +24,7 @@ class Media extends BaseField implements UploadsMedias
     {
         $options['disk'] = $options['disk'] ?? \Media::getDefaultDisk();
         foreach (Arr::wrap($options['type']) as $typeName) {
-            $type = MediaType::findByMachineName($typeName);
+            $type = \MediaType::getByName($typeName);
             $extensions = array_map(
                 function ($ext) {
                     return '.'.$ext;
@@ -40,7 +40,7 @@ class Media extends BaseField implements UploadsMedias
      */
     public function defaultValidationRules(): array
     {
-        $imageType = MediaType::findByMachineName('image');
+        $imageType = \MediaType::getByName('image');
         return [$this->machineName => 'mimes:'.implode(',', $imageType->extensions)];
     }
 

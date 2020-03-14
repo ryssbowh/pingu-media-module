@@ -3,7 +3,7 @@
 namespace Pingu\Media\Entities;
 
 use Pingu\Entity\Entities\Entity;
-use Pingu\Forms\Support\FormRepository;
+use Pingu\Forms\Contracts\FormRepositoryContract;
 use Pingu\Media\Entities\Forms\MediaForms;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\MediaType;
@@ -13,11 +13,14 @@ class Media extends Entity
 {
     protected $fillable = ['name', 'filename', 'disk', 'size'];
 
+    protected $filterable = ['name', 'media_type'];
+
     protected $visible = ['id', 'name', 'filename', 'disk', 'size', 'media_type'];
 
     protected $with = ['image_styles'];
 
     public $adminListFields = ['name', 'filename', 'disk', 'size', 'media_type', 'image'];
+    
     /**
      * booter. Register events to delete files when media is handled.
      */
@@ -48,7 +51,7 @@ class Media extends Entity
         );
     }
     
-    public function forms(): FormRepository
+    public function forms(): FormRepositoryContract
     {
         return new MediaForms($this);
     }
@@ -129,6 +132,18 @@ class Media extends Entity
     public function media_type()
     {
         return $this->belongsTo(MediaType::class);
+    }
+
+    /**
+     * Media type accessor
+     * 
+     * @param mixed $value
+     * 
+     * @return MediaType
+     */
+    public function getMediaTypeAttribute($value)
+    {
+        return \MediaType::getById($this->attributes['media_type_id']);
     }
 
     /**
@@ -235,7 +250,7 @@ class Media extends Entity
     {
         array_unshift($fallbacks, $style);
         foreach ($fallbacks as $styleName) {
-            if ($style = ImageStyle::findByMachineName($styleName)) {
+            if ($style = \ImageStyle::getByName($styleName)) {
                 return $style->url($this);
             }
         }
@@ -271,13 +286,7 @@ class Media extends Entity
      */
     public function img(?string $style = null, array $fallbacks = [])
     {
-        if (!$this->fileExists()) {
-            $url = $this->media_type->urlIcon();
-        } else if (!is_null($style) and $this->isImage()) {
-            $url = $this->urlStyle($style, $fallbacks);
-        } else {
-            $url = $this->getDisk()->url($this->getPath());
-        }
+        $url = $this->url($style, $fallbacks);
         return '<img src="'.$url.'" alt="'.$this->name.'">';
     }
 
@@ -360,7 +369,7 @@ class Media extends Entity
     public function getExtension()
     {
         $elems = explode('.', $this->filename);
-        return $elems[sizeof($elems) - 1];
+        return end($elems);
     }
 
     /**

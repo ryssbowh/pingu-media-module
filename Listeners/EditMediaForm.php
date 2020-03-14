@@ -25,7 +25,7 @@ class EditMediaForm
      */
     public function handle($event)
     {
-        if ($event->form->getName() == 'edit-media') {
+        if ($event->form->getName() == 'edit-entity-media') {
             $event->form->getElement('disk')->option('disabled', true);
             $event->form->getElement('size')->option('disabled', true);
             $event->form->getElement('filename')->option('disabled', true);

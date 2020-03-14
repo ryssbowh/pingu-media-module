@@ -1,4 +1,4 @@
-@extends('forms::field')
+@extends('forms@field')
 
 @section('inner')
     @if($media = $field->getMedia())

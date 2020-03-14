@@ -10,7 +10,9 @@
         "Intervention\\Image\\ImageServiceProvider"
     ],
     "aliases": {
-        "Media": "Pingu\\Media\\Facades\\Media"
+        "Media": "Pingu\\Media\\Facades\\Media",
+        "MediaType": "Pingu\\Media\\Facades\\MediaType",
+        "ImageStyle": "Pingu\\Media\\Facades\\ImageStyle"
     },
     "files": [
         "functions.php"

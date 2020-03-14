@@ -22,6 +22,6 @@ class UploadMedia extends Field
      */
     protected function getDefaultViewSuggestion(): string
     {
-        return 'media::fields.uploadmedia';
+        return 'media@fields.uploadmedia';
     }
 }

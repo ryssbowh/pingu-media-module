@@ -2,8 +2,10 @@
 
 namespace Pingu\Media\Entities\Fields;
 
+use Pingu\Field\BaseFields\Model;
 use Pingu\Field\BaseFields\Text;
 use Pingu\Field\Support\FieldRepository\BaseFieldRepository;
+use Pingu\Media\Entities\MediaType;
 
 class MediaFields extends BaseFieldRepository
 {
@@ -16,12 +18,26 @@ class MediaFields extends BaseFieldRepository
                     'required' => true
                 ]
             ),
-            new Text('disk'),
-            new Text('size'),
+            new Text('disk', [
+                'disabled' => true
+            ]),
+            new Text('size', [
+                'disabled' => true
+            ]),
             new Text(
                 'filename',
                 [
-                    'required' => true
+                    'required' => true,
+                    'disabled' => true
+                ]
+            ),
+            new Model(
+                'media_type',
+                [
+                    'model' => MediaType::class,
+                    'textField' => 'name',
+                    'required' => true,
+                    'disabled' => true
                 ]
             )
         ];

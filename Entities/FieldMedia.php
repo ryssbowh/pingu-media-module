@@ -5,6 +5,7 @@ namespace Pingu\Media\Entities;
 use Illuminate\Http\UploadedFile;
 use Pingu\Field\Entities\BaseBundleField;
 use Pingu\Forms\Support\Field;
+use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Media\Contracts\UploadsMedias;
 use Pingu\Media\Entities\Media;
 use Pingu\Media\Entities\MediaType;
@@ -18,6 +19,8 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
     protected $table = 'field_medias';
     
     protected static $availableWidgets = [UploadMedia::class];
+
+    protected static $availableFilterWidgets = [TextInput::class];
     
     protected $fillable = ['required', 'types'];
 
@@ -82,7 +85,7 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
     public function getTypesAttribute($value)
     {
         return array_map(function ($name) {
-            return MediaType::findByMachineName($name);
+            return \MediaType::getByName($name);
         }, json_decode($value));
     }
 
@@ -105,18 +108,12 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
     /**
      * @inheritDoc
      */
-    public function toSingleFormField($value): Field
+    public function formFieldOptions(): array
     {
-        return new UploadMedia(
-            $this->machineName(),
-            [
-                'label' => $this->name(),
-                'showLabel' => false,
-                'required' => $this->required,
-                'accept' => implode(',', $this->getExtensions(true)),
-                'default' => $value
-            ]
-        );
+        return [
+            'required' => $this->required,
+            'accept' => implode(',', $this->getExtensions(true))
+        ];
     }
 
     /**

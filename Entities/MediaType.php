@@ -23,6 +23,23 @@ class MediaType extends Entity
 
     public $adminListFields = ['name', 'icon'];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function ($mediaType) {
+            \MediaType::forgetCache();
+        });
+
+        static::created(function ($mediaType) {
+            \MediaType::forgetCache();
+        });
+
+        static::updated(function ($mediaType) {
+            \MediaType::forgetCache();
+        });
+    }
+
     public function getPolicy(): string
     {
         return MediaPolicy::class;

@@ -29,8 +29,17 @@ class ImageStyle extends Entity
         static::deleted(
             function ($style) {
                 $style->deleteImages();
+                \ImageStyle::forgetCache();
             }
         );
+
+        static::created(function ($style) {
+            \ImageStyle::forgetCache();
+        });
+
+        static::updated(function ($style) {
+            \ImageStyle::forgetCache();
+        });
     }
 
     public function getPolicy(): string
