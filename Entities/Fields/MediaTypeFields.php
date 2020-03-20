@@ -35,7 +35,7 @@ class MediaTypeFields extends BaseFieldRepository
             new Media(
                 'icon',
                 [
-                    'type' => 'image'
+                    'types' => 'image'
                 ]
             )
         ];

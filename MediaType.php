@@ -9,10 +9,21 @@ class MediaType
 {
     public function get($mediaType)
     {
+        if (is_array($mediaType)) {
+            return $this->getByArray($mediaType);
+        }
         if (is_numeric($mediaType)) {
             return $this->getByInt($mediaType);
         }
         return $this->getByName($mediaType);
+    }
+
+    public function getByArray(array $mediaTypes)
+    {
+        $_this = $this;
+        return array_map(function ($type) use ($_this){
+            return $_this->get($type);
+        }, $mediaTypes);
     }
 
     public function getById(int $mediaType): ?MediaTypeModel

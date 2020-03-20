@@ -14,7 +14,7 @@ class CreateMediaRequest extends FormRequest
     public function rules()
     {
         return [
-            'file' => 'required|max:'.config('media.maxFileSize')
+            'file' => 'required|file|defined_extension|max:'.config('media.maxFileSize')
         ];
     }
 }

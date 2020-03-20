@@ -25,10 +25,13 @@ class EditMediaForm
      */
     public function handle($event)
     {
-        if ($event->form->getName() == 'edit-entity-media') {
+        if ($event->form->getName() == 'edit-model-media') {
             $event->form->getElement('disk')->option('disabled', true);
             $event->form->getElement('size')->option('disabled', true);
             $event->form->getElement('filename')->option('disabled', true);
+        }
+        if ($event->form->getName() == 'edit-model-mediatype') {
+            $event->form->getElement('machineName')->option('disabled', true);
         }
     }
 }

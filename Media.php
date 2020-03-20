@@ -92,7 +92,8 @@ class Media
     {
         $out = [];
         foreach (MediaType::all() as $media){
-            if (!is_null($ignore) and $media == $ignore) { continue;
+            if (!is_null($ignore) and $media == $ignore) { 
+                continue;
             }
             $out = array_merge($out, $media->extensions);
         }

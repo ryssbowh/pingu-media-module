@@ -34,6 +34,9 @@ class MediaTypePolicy extends Policy
 
     public function delete(?User $user, Entity $entity)
     {
+        if ($entity->countMedias() > 0) {
+            return false;
+        }
         $user = $this->userOrGuest($user);
         return $user->hasPermissionTo('delete media types');
     }

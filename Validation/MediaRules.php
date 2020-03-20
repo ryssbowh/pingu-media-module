@@ -31,6 +31,21 @@ class MediaRules
         return true;
     }
 
+    public function definedExtension($attribute, $file, $unused, $validator)
+    {
+        $ext = $file->guessExtension();
+        $extensions = \Media::getAvailableFileExtensions();
+        if (!in_array($ext, $extensions)) {
+            $validator->setCustomMessages(
+                [
+                $attribute.'.defined_extension' => 'Extension is not valid, valid types are ('.implode(', ', $extensions).')'
+                ]
+            );
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Checks if an array of extensions is not already in use in other media types
      * 
@@ -68,23 +83,5 @@ class MediaRules
             return false;
         }
         return true;
-    }
-
-    /**
-     * Checks if a name is unique for a media
-     * 
-     * @param string $attribute
-     * @param string $name      
-     * @param array $ids       
-     * @param Validator $validator 
-     * 
-     * @return bool
-     */
-    public function uniqueMediaName($attribute, $name, $ids, $validator) {
-        $media = MediaModel::findOrFail($ids[0]);
-        if($media->name == $name) { 
-            return true;
-        }
-        return !$media->media_type->hasMediaCalled($name, $media);
     }
 }

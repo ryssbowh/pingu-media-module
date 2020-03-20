@@ -5,7 +5,7 @@ namespace Pingu\Media\Entities;
 use Pingu\Core\Traits\Models\HasMachineName;
 use Pingu\Entity\Entities\Entity;
 use Pingu\Media\Entities\Media as MediaModel;
-use Pingu\Media\Entities\Policies\MediaPolicy;
+use Pingu\Media\Entities\Policies\MediaTypePolicy;
 
 class MediaType extends Entity
 {
@@ -31,24 +31,28 @@ class MediaType extends Entity
             \MediaType::forgetCache();
         });
 
-        static::created(function ($mediaType) {
-            \MediaType::forgetCache();
-        });
-
-        static::updated(function ($mediaType) {
+        static::saved(function ($mediaType) {
             \MediaType::forgetCache();
         });
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getPolicy(): string
     {
-        return MediaPolicy::class;
+        return MediaTypePolicy::class;
     }
 
-    public function getIconFriendlyValue()
+    /**
+     * Icon accessor
+     * 
+     * @return string
+     */
+    public function friendlyIconAttribute($value)
     {
-        if ($this->icon) {
-            return $this->icon->img('icon');
+        if ($value) {
+            return $value->img('icon');
         }
         return '';
     }
@@ -66,6 +70,16 @@ class MediaType extends Entity
     public function medias()
     {
         return $this->hasMany(Media::class);
+    }
+
+    /**
+     * Count the maount of medias that has this type
+     * 
+     * @return int
+     */
+    public function countMedias(): int
+    {
+        return $this->medias()->count();
     }
 
     /**
@@ -104,6 +118,11 @@ class MediaType extends Entity
         return implode(',', $this->extensions);
     }
 
+    /**
+     * Extensions mutator
+     * 
+     * @param mixed $value
+     */
     public function setExtensionsAttribute($value)
     {
         if (is_string($value)) {

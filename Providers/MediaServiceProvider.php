@@ -5,10 +5,12 @@ namespace Pingu\Media\Providers;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Http\UploadedFile;
 use Pingu\Core\Support\ModuleServiceProvider;
+use Pingu\Media\Bundles\MediaBundle;
 use Pingu\Media\Config\MediaSettings;
 use Pingu\Media\Entities\FieldMedia;
 use Pingu\Media\Entities\ImageStyle as ImageStyleModel;
 use Pingu\Media\Entities\Media as MediaModel;
+use Pingu\Media\Entities\MediaFolder;
 use Pingu\Media\Entities\MediaTransformer;
 use Pingu\Media\Entities\MediaType as MediaTypeModel;
 use Pingu\Media\Forms\Fields\UploadMedia;
@@ -16,6 +18,7 @@ use Pingu\Media\ImageStyle;
 use Pingu\Media\Infos\MediaInfo;
 use Pingu\Media\Media;
 use Pingu\Media\MediaType;
+use Pingu\Media\Observers\MediaObserver;
 use Pingu\Media\Support\Fields\Media as MediaField;
 use Pingu\Media\Transformers\Orientate;
 use Pingu\Media\Transformers\Resize;
@@ -43,6 +46,7 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(EventServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
+        (new MediaBundle)->register();
         $this->registerEntities($this->entities);
         \Settings::register(new MediaSettings, $this->app);
     }
@@ -66,6 +70,7 @@ class MediaServiceProvider extends ModuleServiceProvider
         \Infos::registerProvider(MediaInfo::class);
         \Field::registerBundleFields(FieldMedia::class);
         MediaField::register();
+        MediaModel::observe(MediaObserver::class);
     }
 
     /**
@@ -84,8 +89,8 @@ class MediaServiceProvider extends ModuleServiceProvider
     public function registerRules()
     {
         \Validator::extend('file_extension', MediaRules::class.'@fileExtension');
-        \Validator::extend('unique_media_name', MediaRules::class.'@uniqueMediaName');
         \Validator::extend('unique_extensions', MediaRules::class.'@uniqueExtensions');
+        \Validator::extend('defined_extension', MediaRules::class.'@definedExtension');
     }
 
     /**

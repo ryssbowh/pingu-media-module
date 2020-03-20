@@ -4,10 +4,10 @@ namespace Pingu\Media\Entities\Fields;
 
 use Pingu\Field\BaseFields\Model;
 use Pingu\Field\BaseFields\Text;
-use Pingu\Field\Support\FieldRepository\BaseFieldRepository;
+use Pingu\Field\Support\FieldRepository\BundledEntityFieldRepository;
 use Pingu\Media\Entities\MediaType;
 
-class MediaFields extends BaseFieldRepository
+class MediaFields extends BundledEntityFieldRepository
 {
     protected function fields(): array
     {

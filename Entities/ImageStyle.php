@@ -111,7 +111,7 @@ class ImageStyle extends Entity
      */
     protected function imagePath(Media $media)
     {
-        return $media->getFolder().'/'.$this->getFolder().'/'.$media->filename;
+        return config('media.folder').'/'.$this->getFolder().'/'.$media->filename;
     }
 
     /**
@@ -215,7 +215,7 @@ class ImageStyle extends Entity
         //apply transformations
         $this->applyTransformations($tmpFile);
         //move image from temp disk to destination disk
-        $target = $media->getFolder().'/'.$this->getFolder();
+        $target = config('media.folder').'/'.$this->getFolder();
         $media->getDisk()->putFileAs($target, new File($tmpFile), $media->filename);
         //delete image from temp disk
         \Storage::disk('tmp')->delete($tmpName);

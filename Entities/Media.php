@@ -2,16 +2,16 @@
 
 namespace Pingu\Media\Entities;
 
-use Pingu\Entity\Entities\Entity;
+use Pingu\Entity\Entities\BundledEntity;
 use Pingu\Forms\Contracts\FormRepositoryContract;
 use Pingu\Media\Entities\Forms\MediaForms;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\MediaType;
 use Pingu\Media\Entities\Policies\MediaPolicy;
 
-class Media extends Entity
+class Media extends BundledEntity
 {
-    protected $fillable = ['name', 'filename', 'disk', 'size'];
+    protected $fillable = ['name', 'disk', 'filename', 'size'];
 
     protected $filterable = ['name', 'media_type'];
 
@@ -20,35 +20,21 @@ class Media extends Entity
     protected $with = ['image_styles'];
 
     public $adminListFields = ['name', 'filename', 'disk', 'size', 'media_type', 'image'];
-    
-    /**
-     * booter. Register events to delete files when media is handled.
-     */
-    public static function boot()
-    {
-        parent::boot();
 
-        static::updating(
-            function ($media) {
-                if ($media->isDirty('name')) {
-                    if ($media::nameExists($media->name, $media)) {
-                        throw MediaException::nameExists($media->name);
-                    }
-                }
-            }
-        );
-        static::created(
-            function ($media) {
-                if (config('media.stylesCreationStrategy', 'lazy') == 'eager') {
-                    $media->createStyles();
-                }
-            }
-        );
-        static::deleted(
-            function ($media) {
-                $media->deleteFile();
-            }
-        );
+    /**
+     * @inheritDoc
+     */
+    public static function routeSlugs(): string
+    {
+        return 'medias';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function bundleName(): string
+    {
+        return 'media.media';
     }
     
     public function forms(): FormRepositoryContract
@@ -56,32 +42,40 @@ class Media extends Entity
         return new MediaForms($this);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getPolicy(): string
     {
         return MediaPolicy::class;
     }
 
-    public static function getMedia_typeFriendlyName()
+    /**
+     * Media type accessor
+     * 
+     * @return string
+     */
+    public function friendlyMediaTypeValue($mediaType)
     {
-        return 'Type';
+        return $mediaType->name;
     }
 
-    public static function getImageFriendlyName()
+    /**
+     * Size accessor
+     * 
+     * @return string
+     */
+    public function friendlySizeValue($size)
     {
-        return 'Image';
+        return friendly_size($size);
     }
 
-    public function getMedia_typeFriendlyValue()
-    {
-        return $this->media_type->name;
-    }
-
-    public function getSizeFriendlyValue()
-    {
-        return friendly_size($this->size);
-    }
-
-    public function getImageFriendlyValue()
+    /**
+     * Image accessor
+     * 
+     * @return string
+     */
+    public function friendlyImageValue()
     {
         return '<img src="'.$this->urlIcon().'" alt="'.$this->name.'">';
     }
@@ -101,7 +95,14 @@ class Media extends Entity
         return $array;
     }
 
-    public static function generateUniqueFileName(string $name)
+    /**
+     * Generate a unique name for a file
+     * 
+     * @param string $name
+     * 
+     * @return string
+     */
+    public static function generateUniqueFileName(string $name): string
     {
         $media = static::where('filename', '=', $name)->first();
         if ($media) {
@@ -157,23 +158,13 @@ class Media extends Entity
     }
 
     /**
-     * Get this media base folder
-     * 
-     * @return string
-     */
-    public function getFolder()
-    {
-        return config('media.folder');
-    }
-
-    /**
      * Get this media relative path
      * 
      * @return string
      */
     public function getPath()
     {
-        return $this->getFolder().'/'.$this->filename;
+        return config('media.folder').'/'.$this->filename;
     }
 
     /**

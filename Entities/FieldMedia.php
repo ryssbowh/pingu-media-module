@@ -2,7 +2,9 @@
 
 namespace Pingu\Media\Entities;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
+use Pingu\Entity\Entities\Entity;
 use Pingu\Field\Entities\BaseBundleField;
 use Pingu\Forms\Support\Field;
 use Pingu\Forms\Support\Fields\TextInput;
@@ -108,7 +110,7 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
     /**
      * @inheritDoc
      */
-    public function formFieldOptions(): array
+    public function formFieldOptions(int $index = 0): array
     {
         return [
             'required' => $this->required,
@@ -121,7 +123,7 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
      */
     public function defaultValidationRule(): string
     {
-        return ($this->required ? 'required|' : '') . 'file|mimes:'.implode(',', $this->getExtensions()).'|max:'.$this->getMaxFileSize();
+        return ($this->required ? 'required|' : 'sometimes|') . 'file|mimes:'.implode(',', $this->getExtensions()).'|max:'.$this->getMaxFileSize();
     }
 
     /**
@@ -138,5 +140,13 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
     protected function getMaxFileSize()
     {
         return config('media.maxFileSize');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function singleFilterQueryModifier(Builder $query, $value, Entity $entity)
+    {
+        $query->where('value', '=', $value);
     }
 }

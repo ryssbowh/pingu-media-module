@@ -1,9 +1,9 @@
 <?php
 namespace Pingu\Media\Forms;
 
-use Pingu\Forms\Support\Fields\SelectMedia;
 use Pingu\Forms\Support\Fields\Submit;
 use Pingu\Forms\Support\Form;
+use Pingu\Media\Forms\Fields\UploadMedia;
 
 class CreateMedia extends Form
 {
@@ -25,8 +25,11 @@ class CreateMedia extends Form
     public function elements(): array
     {
         return [
-            new SelectMedia('file'),
-            new Submit
+            new UploadMedia('file', [
+                'required' => true,
+                'accept' => $this->getDefinedExtensions()
+            ]),
+            new Submit('_submit')
         ];
     }
 
@@ -63,6 +66,13 @@ class CreateMedia extends Form
      */
     public function name(): string
     {
-        return 'create-media';
+        return 'create-entity-media';
+    }
+
+    protected function getDefinedExtensions()
+    {
+        return implode(',', array_map(function ($ext) {
+            return '.'.$ext;
+        }, \Media::getAvailableFileExtensions()));
     }
 }

@@ -2,10 +2,11 @@
 
 namespace Pingu\Media\Support\Fields;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Pingu\Core\Entities\BaseModel;
 use Pingu\Field\Support\BaseField;
-use Pingu\Forms\Support\Fields\SelectMedia;
 use Pingu\Media\Contracts\UploadsMedias;
 use Pingu\Media\Entities\Media as MediaEntity;
 use Pingu\Media\Entities\MediaType;
@@ -18,21 +19,39 @@ class Media extends BaseField implements UploadsMedias
 
     protected static $availableWidgets = [UploadMedia::class];
 
-    protected $requiredOptions = ['type'];
+    protected $requiredOptions = ['types'];
 
     protected function init(array $options)
     {
-        $options['disk'] = $options['disk'] ?? \Media::getDefaultDisk();
-        foreach (Arr::wrap($options['type']) as $typeName) {
-            $type = \MediaType::getByName($typeName);
-            $extensions = array_map(
-                function ($ext) {
-                    return '.'.$ext;
-                }, $type->extensions
-            );
-        }
-        $options['accept'] = implode(',', $extensions);
         parent::init($options);
+        $this->option('disk', $options['disk'] ?? \Media::getDefaultDisk());
+        $this->option('accept', implode(',', $this->getExtensions()));
+    }
+
+    /**
+     * Gets all the tyeps as classes of MediaType
+     * 
+     * @return array
+     */
+    public function getTypes(): array
+    {
+        return \MediaType::get(Arr::wrap($this->option('types')));
+    }
+
+    /**
+     * Get all the extensions defined by all the types of medias
+     * 
+     * @return array
+     */
+    public function getExtensions(): array
+    {
+        $extensions = [];
+        foreach ($this->getTypes() as $type) {
+            $extensions += array_map(function ($ext) {
+                return '.'.$ext;
+            }, $type->extensions);
+        }
+        return $extensions;
     }
 
     /**
@@ -78,5 +97,15 @@ class Media extends BaseField implements UploadsMedias
     public function getDisk()
     {
         return config('media.defaultDisk');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function filterQueryModifier(Builder $query, $value, BaseModel $model)
+    {
+        if (!$value) { return;
+        }
+        $query->where($this->machineName.'_id', '=', $value);
     }
 }
