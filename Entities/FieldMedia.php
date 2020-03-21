@@ -4,6 +4,7 @@ namespace Pingu\Media\Entities;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Pingu\Entity\Entities\Entity;
 use Pingu\Field\Entities\BaseBundleField;
 use Pingu\Forms\Support\Field;
@@ -28,7 +29,7 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
 
     protected $casts = [
         'required' => 'boolean',
-        'types' => 'array'
+        'types' => 'json'
     ];
 
     /**
@@ -86,9 +87,15 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
      */
     public function getTypesAttribute($value)
     {
+        $value = Arr::wrap(json_decode($value, true));
         return array_map(function ($name) {
             return \MediaType::getByName($name);
-        }, json_decode($value));
+        }, $value);
+    }
+
+    public function formTypesAttribute($value)
+    {
+        return Arr::wrap(json_decode($value, true));
     }
 
     /**

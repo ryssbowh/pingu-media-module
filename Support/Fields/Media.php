@@ -25,7 +25,7 @@ class Media extends BaseField implements UploadsMedias
     {
         parent::init($options);
         $this->option('disk', $options['disk'] ?? \Media::getDefaultDisk());
-        $this->option('accept', implode(',', $this->getExtensions()));
+        $this->option('accept', implode(',', $this->getExtensions(true)));
     }
 
     /**
@@ -43,12 +43,12 @@ class Media extends BaseField implements UploadsMedias
      * 
      * @return array
      */
-    public function getExtensions(): array
+    public function getExtensions($withDots = false): array
     {
         $extensions = [];
         foreach ($this->getTypes() as $type) {
-            $extensions += array_map(function ($ext) {
-                return '.'.$ext;
+            $extensions += array_map(function ($ext) use ($withDots) {
+                return $withDots ? '.'.$ext : $ext;
             }, $type->extensions);
         }
         return $extensions;
@@ -59,8 +59,7 @@ class Media extends BaseField implements UploadsMedias
      */
     public function defaultValidationRules(): array
     {
-        $imageType = \MediaType::getByName('image');
-        return [$this->machineName => 'mimes:'.implode(',', $imageType->extensions)];
+        return [$this->machineName => ($this->required ? 'required|' : 'sometimes|') . 'file|mimes:'.implode(',', $this->getExtensions()).'|max:'.$this->getMaxFileSize()];
     }
 
     /**
@@ -79,6 +78,14 @@ class Media extends BaseField implements UploadsMedias
         if ($value) {
             return (string)$value->getKey();
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getMaxFileSize()
+    {
+        return $this->option('maxSize') ?? config('media.maxFileSize');
     }
 
     /**

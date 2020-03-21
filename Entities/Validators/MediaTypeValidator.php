@@ -6,7 +6,7 @@ use Pingu\Field\Support\FieldValidator\BaseFieldsValidator;
 
 class MediaTypeValidator extends BaseFieldsValidator
 {
-    protected function rules(): array
+    protected function rules(bool $updating): array
     {
         return [
             'icon' => 'file',

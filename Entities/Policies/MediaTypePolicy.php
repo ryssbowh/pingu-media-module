@@ -2,12 +2,13 @@
 
 namespace Pingu\Media\Entities\Policies;
 
-use Pingu\Core\Support\Policy;
+use Pingu\Entity\Contracts\BundleContract;
 use Pingu\Entity\Entities\Entity;
+use Pingu\Entity\Support\BaseEntityPolicy;
 use Pingu\Media\Entities\MediaType;
 use Pingu\User\Entities\User;
 
-class MediaTypePolicy extends Policy
+class MediaTypePolicy extends BaseEntityPolicy
 {
     protected function userOrGuest(?User $user)
     {
@@ -41,7 +42,7 @@ class MediaTypePolicy extends Policy
         return $user->hasPermissionTo('delete media types');
     }
 
-    public function create(?User $user)
+    public function create(?User $user, ?BundleContract $bundle = null)
     {
         $user = $this->userOrGuest($user);
         return $user->hasPermissionTo('create media types');

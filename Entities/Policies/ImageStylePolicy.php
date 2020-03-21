@@ -2,12 +2,13 @@
 
 namespace Pingu\Media\Entities\Policies;
 
-use Pingu\Core\Support\Policy;
+use Pingu\Entity\Contracts\BundleContract;
 use Pingu\Entity\Entities\Entity;
+use Pingu\Entity\Support\BaseEntityPolicy;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\User\Entities\User;
 
-class ImageStylePolicy extends Policy
+class ImageStylePolicy extends BaseEntityPolicy
 {
     protected function userOrGuest(?User $user)
     {
@@ -38,7 +39,7 @@ class ImageStylePolicy extends Policy
         return $user->hasPermissionTo('delete images styles');
     }
 
-    public function create(?User $user)
+    public function create(?User $user, ?BundleContract $bundle = null)
     {
         $user = $this->userOrGuest($user);
         return $user->hasPermissionTo('add images styles');
