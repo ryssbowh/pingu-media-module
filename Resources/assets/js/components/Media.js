@@ -6,7 +6,7 @@ const Media = (() => {
 
     function init()
     {
-        Helpers.log('File initialized');
+        Logger.log('File initialized');
         if(opt.addMediaFields.length) {
             bindSelectFile()
         }
