@@ -2,7 +2,7 @@
 
 namespace Pingu\Media\Entities\Routes;
 
-use Pingu\Entity\Support\BaseEntityRoutes;
+use Pingu\Entity\Support\Routes\BaseEntityRoutes;
 
 class MediaTypeRoutes extends BaseEntityRoutes
 {
