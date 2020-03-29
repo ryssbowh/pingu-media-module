@@ -26,12 +26,4 @@ class ImageStyleRoutes extends BaseEntityRoutes
             'transformations' => 'can:edit,image_style'
         ];
     }
-
-    protected function names(): array
-    {
-        return [
-            'admin.index' => 'media.admin.imagesStyles',
-            'admin.create' => 'media.admin.imagesStyles.create'
-        ];
-    }
 }

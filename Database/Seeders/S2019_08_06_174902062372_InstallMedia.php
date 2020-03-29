@@ -75,7 +75,7 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
             'weight' => 5,
             'active' => 1,
             'deletable' => false,
-            'url' => 'media.admin.media',
+            'url' => 'media.admin.index',
             'permission_id' => $perm->id
             ], 'admin-menu'
         );
@@ -86,7 +86,7 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
             'weight' => 0,
             'active' => 1,
             'deletable' => false,
-            'url' => 'media.admin.mediaTypes',
+            'url' => 'media_type.admin.index',
             'permission_id' => $perm2->id
             ], 'admin-menu', $media
         );
@@ -97,7 +97,7 @@ class S2019_08_06_174902062372_InstallMedia extends MigratableSeeder
             'weight' => 0,
             'active' => 1,
             'deletable' => false,
-            'url' => 'media.admin.imagesStyles',
+            'url' => 'image_style.admin.index',
             'permission_id' => $perm4->id
             ], 'admin-menu', $media
         );

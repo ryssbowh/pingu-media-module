@@ -2,22 +2,18 @@
 
 namespace Pingu\Media\Entities;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
-use Pingu\Entity\Entities\Entity;
 use Pingu\Field\Entities\BaseBundleField;
-use Pingu\Forms\Support\Field;
+use Pingu\Field\Traits\HandlesModel;
 use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Media\Contracts\UploadsMedias;
 use Pingu\Media\Entities\Media;
-use Pingu\Media\Entities\MediaType;
 use Pingu\Media\Forms\Fields\UploadMedia;
 use Pingu\Media\Traits\UploadsMedias as UploadsMediasTrait;
 
 class FieldMedia extends BaseBundleField implements UploadsMedias
 {
-    use UploadsMediasTrait;
+    use UploadsMediasTrait, HandlesModel;
 
     protected $table = 'field_medias';
     
@@ -35,47 +31,17 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
     /**
      * @inheritDoc
      */
+    protected function getModel(): string
+    {
+        return Media::class;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function defaultValue()
     {
         return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function castSingleValueToDb($value)
-    {
-        return $value->id;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function castToSingleFormValue($value)
-    {
-        if ($value) {
-            return $value->id;
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function castSingleValueFromDb($value)
-    {
-        if ($value) {
-            return (int)$value;
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function castSingleValue($value)
-    {
-        if ($value) {
-            return Media::find($value);
-        }
     }
 
     /**
@@ -147,13 +113,5 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
     protected function getMaxFileSize()
     {
         return config('media.maxFileSize');
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function singleFilterQueryModifier(Builder $query, $value, Entity $entity)
-    {
-        $query->where('value', '=', $value);
     }
 }
