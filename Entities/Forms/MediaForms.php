@@ -2,7 +2,7 @@
 
 namespace Pingu\Media\Entities\Forms;
 
-use Pingu\Entity\Support\BaseEntityForms;
+use Pingu\Entity\Support\Forms\BaseEntityForms;
 use Pingu\Forms\Support\Form;
 use Pingu\Media\Entities\Media;
 use Pingu\Media\Forms\CreateMedia;
