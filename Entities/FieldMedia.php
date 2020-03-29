@@ -31,6 +31,14 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
     /**
      * @inheritDoc
      */
+    public function filterable(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
     protected function getModel(): string
     {
         return Media::class;

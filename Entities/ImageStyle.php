@@ -4,7 +4,7 @@ namespace Pingu\Media\Entities;
 
 use Illuminate\Http\File;
 use Pingu\Core\Traits\Models\HasMachineName;
-use Pingu\Entity\Entities\Entity;
+use Pingu\Entity\Support\Entity;
 use Pingu\Media\Entities\Media;
 use Pingu\Media\Entities\MediaTransformer;
 use Pingu\Media\Entities\Policies\ImageStylePolicy;

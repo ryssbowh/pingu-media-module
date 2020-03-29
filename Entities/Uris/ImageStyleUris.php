@@ -2,7 +2,7 @@
 
 namespace Pingu\Media\Entities\Uris;
 
-use Pingu\Entity\Support\BaseEntityUris;
+use Pingu\Entity\Support\Uris\BaseEntityUris;
 use Pingu\Media\Entities\ImageStyle;
 
 class ImageStyleUris extends BaseEntityUris

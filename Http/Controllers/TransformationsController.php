@@ -2,7 +2,7 @@
 
 namespace Pingu\Media\Http\Controllers;
 
-use Pingu\Entity\Entities\Entity;
+use Pingu\Entity\Support\Entity;
 use Pingu\Entity\Http\Controllers\AdminEntityController;
 use Pingu\Entity\Traits\Controllers\Entities\CreatesEntity;
 use Pingu\Entity\Traits\Controllers\Entities\DeletesEntity;

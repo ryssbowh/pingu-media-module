@@ -2,7 +2,7 @@
 
 namespace Pingu\Media\Entities;
 
-use Pingu\Entity\Entities\BundledEntity;
+use Pingu\Entity\Support\BundledEntity;
 use Pingu\Forms\Contracts\FormRepositoryContract;
 use Pingu\Media\Entities\Forms\MediaForms;
 use Pingu\Media\Entities\ImageStyle;
@@ -34,7 +34,7 @@ class Media extends BundledEntity
      */
     public function bundleName(): string
     {
-        return 'media.media';
+        return 'media';
     }
     
     public function forms(): FormRepositoryContract

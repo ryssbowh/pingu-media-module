@@ -29,6 +29,14 @@ class Media extends BaseField implements UploadsMedias
     }
 
     /**
+     * @inheritDoc
+     */
+    public function filterable(): bool
+    {
+        return false;
+    }
+
+    /**
      * Gets all the tyeps as classes of MediaType
      * 
      * @return array

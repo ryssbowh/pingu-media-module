@@ -3,15 +3,15 @@
 namespace Pingu\Media\Bundles;
 
 use Illuminate\Database\Eloquent\Collection;
-use Pingu\Entity\Support\Bundle;
+use Pingu\Entity\Support\Bundle\ClassBundle;
 use Pingu\Media\Entities\Media;
 
-class MediaBundle extends Bundle
+class MediaBundle extends ClassBundle
 {   
     /**
      * @inheritDoc
      */
-    public function bundleFriendlyName(): string
+    public function friendlyName(): string
     {
         return 'Media';
     }
@@ -19,17 +19,9 @@ class MediaBundle extends Bundle
     /**
      * @inheritDoc
      */
-    public function bundleName(): string
+    public function name(): string
     {
-        return 'media.media';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getRouteKey(): string
-    {
-        return 'media.media';
+        return 'media';
     }
 
     /**

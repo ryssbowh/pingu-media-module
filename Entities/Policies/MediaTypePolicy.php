@@ -3,18 +3,13 @@
 namespace Pingu\Media\Entities\Policies;
 
 use Pingu\Entity\Contracts\BundleContract;
-use Pingu\Entity\Entities\Entity;
-use Pingu\Entity\Support\BaseEntityPolicy;
+use Pingu\Entity\Support\Entity;
+use Pingu\Entity\Support\Policies\BaseEntityPolicy;
 use Pingu\Media\Entities\MediaType;
 use Pingu\User\Entities\User;
 
 class MediaTypePolicy extends BaseEntityPolicy
 {
-    protected function userOrGuest(?User $user)
-    {
-        return $user ? $user : \Permissions::guestRole();
-    }
-
     public function index(?User $user)
     {
         $user = $this->userOrGuest($user);

@@ -3,7 +3,7 @@
 namespace Pingu\Media\Entities;
 
 use Pingu\Core\Traits\Models\HasMachineName;
-use Pingu\Entity\Entities\Entity;
+use Pingu\Entity\Support\Entity;
 use Pingu\Media\Entities\Media as MediaModel;
 use Pingu\Media\Entities\Policies\MediaTypePolicy;
 

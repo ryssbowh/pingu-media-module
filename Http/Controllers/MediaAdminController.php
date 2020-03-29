@@ -3,7 +3,7 @@
 namespace Pingu\Media\Http\Controllers;
 
 use Pingu\Core\Http\Controllers\BaseController;
-use Pingu\Entity\Entities\Entity;
+use Pingu\Entity\Support\Entity;
 use Pingu\Entity\Traits\Controllers\Entities\CreatesAdminEntity;
 use Pingu\Entity\Traits\Controllers\Entities\DeletesAdminEntity;
 use Pingu\Entity\Traits\Controllers\Entities\EditsAdminEntity;

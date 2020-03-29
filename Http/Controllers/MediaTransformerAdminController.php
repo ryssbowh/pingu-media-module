@@ -4,7 +4,7 @@ namespace Pingu\Media\Http\Controllers;
 
 use Illuminate\Support\Collection;
 use Pingu\Core\Http\Controllers\BaseController;
-use Pingu\Entity\Entities\Entity;
+use Pingu\Entity\Support\Entity;
 use Pingu\Forms\Support\Form;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\MediaTransformer;

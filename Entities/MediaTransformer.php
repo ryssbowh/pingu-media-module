@@ -4,7 +4,7 @@ namespace Pingu\Media\Entities;
 
 use Pingu\Core\Entities\BaseModel;
 use Pingu\Core\Traits\Models\HasWeight;
-use Pingu\Entity\Entities\Entity;
+use Pingu\Entity\Support\Entity;
 use Pingu\Forms\Contracts\FormRepositoryContract;
 use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Media\Entities\Forms\MediaTransformerForms;

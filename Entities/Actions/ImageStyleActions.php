@@ -2,7 +2,7 @@
 
 namespace Pingu\Media\Entities\Actions;
 
-use Pingu\Entity\Support\BaseEntityActions;
+use Pingu\Entity\Support\Actions\BaseEntityActions;
 use Pingu\Media\Entities\MediaTransformer;
 
 class ImageStyleActions extends BaseEntityActions
