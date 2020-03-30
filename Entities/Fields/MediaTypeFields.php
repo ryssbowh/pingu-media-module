@@ -21,8 +21,6 @@ class MediaTypeFields extends BaseFieldRepository
                 'machineName',
                 [
                     'required' => true,
-                    'class' => 'js-dashify',
-                    'data-dashifyfrom' => 'name'
                 ]
             ),
             new Text(

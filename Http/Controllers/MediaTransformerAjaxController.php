@@ -50,13 +50,11 @@ class MediaTransformerAjaxController extends BaseController
 
     protected function onCreateFormCreated(Form $form, Entity $entity)
     {
-        $form->isAjax();
-        return ['html' => $form->__toString()];
+        return ['html' => $form->render()];
     }
 
     protected function onEditFormCreated(Form $form, Entity $entity)
     {
-        $form->isAjax();
-        return ['html' => $form->__toString()];
+        return ['html' => $form->render()];
     }
 }
