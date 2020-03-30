@@ -24,7 +24,7 @@ class MediaAdminController extends BaseController
 
     protected function onStoreSuccess(Media $media)
     {
-        return redirect()->route('media.admin.media');
+        return redirect()->route('media.admin.index');
     }
 
     protected function onStoreFailure(\Exception $exception)

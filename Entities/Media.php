@@ -21,6 +21,8 @@ class Media extends BundledEntity
 
     public $adminListFields = ['name', 'filename', 'disk', 'size', 'media_type', 'image'];
 
+    protected $notFilterable = ['disk', 'size', 'filename'];
+
     /**
      * @inheritDoc
      */
