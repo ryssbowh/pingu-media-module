@@ -20,7 +20,7 @@ class UploadMedia extends Field
     /**
      * @inheritDoc
      */
-    protected function getDefaultViewSuggestion(): string
+    protected function getDefaultViewName(): string
     {
         return 'media@fields.uploadmedia';
     }
