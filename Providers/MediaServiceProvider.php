@@ -5,21 +5,31 @@ namespace Pingu\Media\Providers;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Http\UploadedFile;
 use Pingu\Core\Support\ModuleServiceProvider;
-use Pingu\Media\Bundles\MediaBundle;
+use Pingu\Media\BaseFields\File as FileField;
+use Pingu\Media\BaseFields\Image as ImageField;
+use Pingu\Media\Bundles\FileBundle;
+use Pingu\Media\Bundles\ImageBundle;
 use Pingu\Media\Config\MediaSettings;
+use Pingu\Media\Displayers\DefaultFileDisplayer;
+use Pingu\Media\Displayers\DefaultImageDisplayer;
+use Pingu\Media\Entities\FieldFile;
+use Pingu\Media\Entities\FieldImage;
 use Pingu\Media\Entities\FieldMedia;
+use Pingu\Media\Entities\File;
+use Pingu\Media\Entities\Image;
 use Pingu\Media\Entities\ImageStyle as ImageStyleModel;
 use Pingu\Media\Entities\Media as MediaModel;
 use Pingu\Media\Entities\MediaFolder;
 use Pingu\Media\Entities\MediaTransformer;
 use Pingu\Media\Entities\MediaType as MediaTypeModel;
+use Pingu\Media\Forms\Fields\UploadFile;
+use Pingu\Media\Forms\Fields\UploadImage;
 use Pingu\Media\Forms\Fields\UploadMedia;
 use Pingu\Media\ImageStyle;
 use Pingu\Media\Infos\MediaInfo;
 use Pingu\Media\Media;
 use Pingu\Media\MediaType;
 use Pingu\Media\Observers\MediaObserver;
-use Pingu\Media\Support\Fields\Media as MediaField;
 use Pingu\Media\Transformers\Orientate;
 use Pingu\Media\Transformers\Resize;
 use Pingu\Media\Validation\MediaRules;
@@ -28,9 +38,27 @@ class MediaServiceProvider extends ModuleServiceProvider
 {
     protected $entities = [
         MediaModel::class,
+        Image::class,
+        File::class,
         MediaTypeModel::class,
         ImageStyleModel::class,
         MediaTransformer::class
+    ];
+
+    protected $bundleFields = [
+        FieldImage::class,
+        FieldFile::class
+    ];
+
+    protected $displayers = [
+        DefaultImageDisplayer::class,
+        DefaultFileDisplayer::class
+    ];
+
+    protected $formFields = [
+        UploadMedia::class,
+        UploadFile::class,
+        UploadImage::class
     ];
 
     /**
@@ -46,7 +74,8 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(EventServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
-        (new MediaBundle)->register();
+        (new FileBundle)->register();
+        (new ImageBundle)->register();
         $this->registerEntities($this->entities);
         \Settings::register(new MediaSettings, $this->app);
     }
@@ -64,12 +93,14 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->registerFactories();
         $this->registerAssets();
         $this->registerRules();
-        \FormField::registerFields(UploadMedia::class);
+        \FormField::registerFields($this->formFields);
         \Media::registerTransformer(Resize::class);
         \Media::registerTransformer(Orientate::class);
         \Infos::registerProvider(MediaInfo::class);
-        \Field::registerBundleFields(FieldMedia::class);
-        MediaField::register();
+        \Field::registerBundleFields($this->bundleFields);
+        \FieldDisplayer::register($this->displayers);
+        ImageField::register();
+        FileField::register();
         MediaModel::observe(MediaObserver::class);
     }
 

@@ -10,7 +10,9 @@ use Pingu\Entity\Traits\Controllers\Entities\EditsAdminEntity;
 use Pingu\Entity\Traits\Controllers\Entities\IndexesAdminEntity;
 use Pingu\Entity\Traits\Controllers\Entities\PatchesAdminEntity;
 use Pingu\Entity\Traits\Controllers\Entities\UpdatesAdminEntity;
-use Pingu\Media\Entities\Media;
+use Pingu\Entity\Traits\Controllers\RendersEntityViews;
+use Pingu\Forms\Support\Form;
+use Pingu\Media\Contracts\MediaContract;
 
 class MediaAdminController extends BaseController
 {
@@ -20,13 +22,20 @@ class MediaAdminController extends BaseController
         DeletesAdminEntity, 
         PatchesAdminEntity, 
         IndexesAdminEntity,
-        StoresMedia;
+        StoresMedia,
+        RendersEntityViews;
 
-    protected function onStoreSuccess(Media $media)
+    /**
+     * @inheritDoc
+     */
+    protected function onStoreSuccess(MediaContract $media)
     {
         return redirect()->route('media.admin.index');
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function onStoreFailure(\Exception $exception)
     {
         if(env('APP_ENV') == 'local') {
@@ -36,8 +45,21 @@ class MediaAdminController extends BaseController
         return back();
     }
 
-    protected function afterStoreSuccess(Media $media)
+    /**
+     * @inheritDoc
+     */
+    protected function afterStoreSuccess(MediaContract $media)
     {
-        \Notify::success(Media::friendlyName().' created');
+        \Notify::success($media::friendlyName().' created');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function afterEditFormCreated(Form $form, Entity $entity)
+    {
+        $form->getElement('filename')->option('disabled', true);
+        $form->getElement('size')->option('disabled', true);
+        $form->getElement('disk')->option('disabled', true);
     }
 }

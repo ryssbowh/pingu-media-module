@@ -7,19 +7,21 @@ use Pingu\Field\Entities\BaseBundleField;
 use Pingu\Field\Traits\HandlesModel;
 use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Media\Contracts\UploadsMedias;
+use Pingu\Media\Displayers\DefaultImageDisplayer;
+use Pingu\Media\Entities\Image;
 use Pingu\Media\Entities\Media;
-use Pingu\Media\Forms\Fields\UploadMedia;
+use Pingu\Media\Forms\Fields\UploadImage;
 use Pingu\Media\Traits\UploadsMedias as UploadsMediasTrait;
 
-class FieldMedia extends BaseBundleField implements UploadsMedias
+class FieldImage extends BaseBundleField implements UploadsMedias
 {
     use UploadsMediasTrait, HandlesModel;
-
-    protected $table = 'field_medias';
     
-    protected static $availableWidgets = [UploadMedia::class];
+    protected static $availableWidgets = [UploadImage::class];
 
-    protected static $availableFilterWidgets = [TextInput::class];
+    protected static $availableFilterWidgets = [];
+
+    protected static $displayers = [DefaultImageDisplayer::class];
     
     protected $fillable = ['required', 'types'];
 
@@ -41,7 +43,7 @@ class FieldMedia extends BaseBundleField implements UploadsMedias
      */
     protected function getModel(): string
     {
-        return Media::class;
+        return Image::class;
     }
 
     /**

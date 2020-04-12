@@ -4,7 +4,7 @@ namespace Pingu\Media\Entities;
 
 use Pingu\Core\Traits\Models\HasMachineName;
 use Pingu\Entity\Support\Entity;
-use Pingu\Media\Entities\Media as MediaModel;
+use Pingu\Media\Entities\Image;
 use Pingu\Media\Entities\Policies\MediaTypePolicy;
 
 class MediaType extends Entity
@@ -89,7 +89,7 @@ class MediaType extends Entity
      */
     public function icon()
     {
-        return $this->belongsTo(MediaModel::class);
+        return $this->belongsTo(Image::class);
     }
 
     /**

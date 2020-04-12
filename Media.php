@@ -4,6 +4,9 @@ namespace Pingu\Media;
 
 use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
+use Pingu\Media\Contracts\MediaContract;
+use Pingu\Media\Entities\File;
+use Pingu\Media\Entities\Image;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Entities\Media as MediaModel;
 use Pingu\Media\Entities\MediaType;
@@ -14,6 +17,13 @@ class Media
 {
     protected $transformers = [];
 
+    /**
+     * Registers a image transformer
+     * 
+     * @param string $class
+     *
+     * @throws MediaTransformerException
+     */
     public function registerTransformer(string $class)
     {
         if(!$this->isTransformerRegistered($class::getSlug())) {
@@ -24,12 +34,26 @@ class Media
         }
     }
 
+    /**
+     * Is a tranformer registered
+     * 
+     * @param string  $slug
+     * 
+     * @return boolean
+     */
     public function isTransformerRegistered(string $slug)
     {
         return isset($this->transformers[$slug]);
     }
 
-    public function getTransformer(string $slug)
+    /**
+     * Get a registered transformer
+     * 
+     * @param string $slug
+     * 
+     * @return string
+     */
+    public function getTransformer(string $slug): string
     {
         if($this->isTransformerRegistered($slug)) {
             return $this->transformers[$slug];
@@ -37,26 +61,68 @@ class Media
         throw MediaTransformerException::notRegistered($class);
     }
 
-    public function getTransformers()
+    /**
+     * Get all registered transformers
+     * 
+     * @return array
+     */
+    public function getTransformers(): array
     {
         return $this->transformers;
     }
 
-    public function getDefaultDisk()
+    /**
+     * Default disk to upload medias
+     * 
+     * @return string
+     */
+    public function getDefaultDisk(): string
     {
         return config('media.defaultDisk');
     }
 
-    public function getMediaTypeForExtension(string $extension)
+    /**
+     * Resolve a media type from an extension
+     * 
+     * @param string $extension
+     * 
+     * @return MediaType
+     */
+    public function getMediaTypeForExtension(string $extension): MediaType
     {
+        $extension = trim($extension, '.');
         $type = MediaType::getByExtension($extension);
-        if(is_null($type)) {
+        if (is_null($type)) {
             throw MediaTypeException::extensionNotDefined($extension);
         }
         return $type;
     }
 
-    public function uploadFile(UploadedFile $file, ?string $disk = null)
+    /**
+     * Guess media class (Image or File)
+     * 
+     * @param UploadedFile $file
+     * 
+     * @return string
+     */
+    protected function getMediaClass(UploadedFile $file): string
+    {
+        $mime = explode('/', $file->getMimeType());
+        if (($mime[0] ?? '') == 'image') {
+            return Image::class;
+        }
+        return File::class;
+    }
+
+    /**
+     * Uploads a file to a disk
+     * 
+     * @param UploadedFile $file
+     * @param string|null  $disk
+     * 
+     * @return MediaContract
+     */
+    public function uploadFile(UploadedFile $file, ?string $disk = null): MediaContract
     {
         if (is_null($disk)) {
             $disk = $this->getDefaultDisk();
@@ -68,7 +134,9 @@ class Media
         $originalName = rtrim($originalFileName, '.'.$ext);
         $fileName = MediaModel::generateUniqueFileName($originalFileName);
         $diskInstance->putFileAs(config('media.folder'), $file, $fileName);
+        $mediaClass = $this->getMediaClass($file);
         try{
+            $mediaInstance = $mediaClass::createFromUploadedFile($file);
             $media = new MediaModel(
                 [
                 'name' => $originalName,
@@ -78,20 +146,20 @@ class Media
                 ]
             );
             $media->media_type()->associate($type);
+            $media->instance()->associate($mediaInstance);
             $media->save();
         }
         catch(\Exception $e){
-            throw $e;
-            
             $diskInstance->delete(config('media.folder').'/'.$fileName);
+            throw $e;
         }
-        return $media;
+        return $mediaInstance;
     }
 
     public function getAvailableFileExtensions(?MediaType $ignore = null)
     {
         $out = [];
-        foreach (MediaType::all() as $media){
+        foreach (MediaType::all() as $media) {
             if (!is_null($ignore) and $media == $ignore) { 
                 continue;
             }

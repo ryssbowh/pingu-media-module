@@ -4,7 +4,7 @@ namespace Pingu\Media\Entities\Validators;
 
 use Pingu\Field\Support\FieldValidator\BundleFieldFieldsValidator;
 
-class FieldMediaValidator extends BundleFieldFieldsValidator
+class FieldImageValidator extends BundleFieldFieldsValidator
 {
     /**
      * @inheritDoc

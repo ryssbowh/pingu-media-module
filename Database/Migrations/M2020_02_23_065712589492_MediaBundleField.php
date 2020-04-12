@@ -14,7 +14,16 @@ class M2020_02_23_065712589492_MediaBundleField extends Migration
     public function up()
     {
         Schema::create(
-            'field_medias', function (Blueprint $table) {
+            'field_images', function (Blueprint $table) {
+                $table->increments('id');
+                $table->boolean('required');
+                $table->json('types');
+                $table->timestamps();
+            }
+        );
+
+        Schema::create(
+            'field_files', function (Blueprint $table) {
                 $table->increments('id');
                 $table->boolean('required');
                 $table->json('types');

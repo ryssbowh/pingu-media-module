@@ -9,7 +9,6 @@ class MediaValidator extends BaseFieldsValidator
     protected function rules(bool $updating): array
     {
         return [
-            // 'file' => 'required|max:'.config('media.maxFileSize')
             'name' => 'string|required'
         ];  
     }

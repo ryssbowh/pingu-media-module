@@ -21,6 +21,6 @@ trait UploadsMedias
 
     protected function uploadSingleMedia(UploadedFile $file)
     {
-        return \Media::uploadFile($file, $this->getDisk())->id;
+        return \Media::uploadFile($file, $this->getDisk())->getKey();
     }
 }

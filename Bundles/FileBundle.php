@@ -4,16 +4,17 @@ namespace Pingu\Media\Bundles;
 
 use Illuminate\Database\Eloquent\Collection;
 use Pingu\Entity\Support\Bundle\ClassBundle;
+use Pingu\Media\Entities\File;
 use Pingu\Media\Entities\Media;
 
-class MediaBundle extends ClassBundle
+class FileBundle extends ClassBundle
 {   
     /**
      * @inheritDoc
      */
     public function friendlyName(): string
     {
-        return 'Media';
+        return 'File';
     }
 
     /**
@@ -21,7 +22,7 @@ class MediaBundle extends ClassBundle
      */
     public function name(): string
     {
-        return 'media';
+        return 'file';
     }
 
     /**
@@ -29,7 +30,7 @@ class MediaBundle extends ClassBundle
      */
     public function entityFor(): string
     {
-        return Media::class;
+        return File::class;
     }
 
     /**
@@ -37,6 +38,6 @@ class MediaBundle extends ClassBundle
      */
     public function entities(): Collection
     {
-        return Media::get();
+        return Media::whereHasMorph('instance', [File::class]);
     }
 }

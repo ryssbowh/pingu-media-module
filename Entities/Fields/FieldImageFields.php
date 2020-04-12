@@ -8,7 +8,7 @@ use Pingu\Field\BaseFields\_List;
 use Pingu\Field\Support\FieldRepository\BundleFieldFieldRepository;
 use Pingu\Media\Entities\MediaType;
 
-class FieldMediaFields extends BundleFieldFieldRepository
+class FieldImageFields extends BundleFieldFieldRepository
 {
     /**
      * @inheritDoc

@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-namespace Pingu\Media\Support\Fields;
+namespace Pingu\Media\BaseFields;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
@@ -8,18 +8,21 @@ use Illuminate\Support\Arr;
 use Pingu\Core\Entities\BaseModel;
 use Pingu\Field\Support\BaseField;
 use Pingu\Media\Contracts\UploadsMedias;
-use Pingu\Media\Entities\Media as MediaEntity;
+use Pingu\Media\Displayers\DefaultImageDisplayer;
+use Pingu\Media\Entities\Image as ImageEntity;
 use Pingu\Media\Entities\MediaType;
-use Pingu\Media\Forms\Fields\UploadMedia;
+use Pingu\Media\Forms\Fields\UploadImage;
 use Pingu\Media\Traits\UploadsMedias as UploadsMediasTrait;
 
-class Media extends BaseField implements UploadsMedias
+class Image extends BaseField implements UploadsMedias
 {
     use UploadsMediasTrait;
 
-    protected static $availableWidgets = [UploadMedia::class];
+    protected static $availableWidgets = [UploadImage::class];
 
     protected $requiredOptions = ['types'];
+
+    protected static $displayers = [DefaultImageDisplayer::class];
 
     protected function init(array $options)
     {
@@ -67,7 +70,7 @@ class Media extends BaseField implements UploadsMedias
      */
     public function defaultValidationRules(): array
     {
-        return [$this->machineName => ($this->required ? 'required|' : 'sometimes|') . 'file|mimes:'.implode(',', $this->getExtensions()).'|max:'.$this->getMaxFileSize()];
+        return [$this->machineName => 'file|mimes:'.implode(',', $this->getExtensions()).'|max:'.$this->getMaxFileSize()];
     }
 
     /**
@@ -102,7 +105,7 @@ class Media extends BaseField implements UploadsMedias
     public function castValue($value)
     {
         if ($value) {
-            MediaEntity::find($value);
+            return ImageEntity::find($value);
         }
     }
 
@@ -119,7 +122,8 @@ class Media extends BaseField implements UploadsMedias
      */
     public function filterQueryModifier(Builder $query, $value, BaseModel $model)
     {
-        if (!$value) { return;
+        if (!$value) { 
+            return;
         }
         $query->where($this->machineName.'_id', '=', $value);
     }

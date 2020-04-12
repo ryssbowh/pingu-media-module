@@ -9,7 +9,7 @@ interface UploadsMedias
     /**
      * Uploads files and turn them into Medias
      * 
-     * @param  UploadedFile|array $files
+     * @param UploadedFile|array $files
      * 
      * @return Media|array
      */

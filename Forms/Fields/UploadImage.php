@@ -3,8 +3,9 @@
 namespace Pingu\Media\Forms\Fields;
 
 use Pingu\Forms\Support\Field;
+use Pingu\Media\Entities\Image;
 
-class UploadMedia extends Field
+class UploadImage extends Field
 {
     /**
      * @inheritDoc
@@ -14,11 +15,16 @@ class UploadMedia extends Field
         return array_merge(parent::getAttributeOptions(), ['accept']);
     }
 
+    public function getImage()
+    {
+        return Image::find($this->value);
+    }
+
     /**
      * @inheritDoc
      */
     public function systemView(): string
     {
-        return 'media@forms.fields.uploadmedia';
+        return 'media@forms.fields.uploadimage';
     }
 }

@@ -5,6 +5,7 @@ namespace Pingu\Media\Entities;
 use Illuminate\Http\File;
 use Pingu\Core\Traits\Models\HasMachineName;
 use Pingu\Entity\Support\Entity;
+use Pingu\Media\Entities\Image;
 use Pingu\Media\Entities\Media;
 use Pingu\Media\Entities\MediaTransformer;
 use Pingu\Media\Entities\Policies\ImageStylePolicy;
@@ -58,13 +59,13 @@ class ImageStyle extends Entity
     }
 
     /**
-     * Media relationship
+     * Image relationship
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function medias()
+    public function images()
     {
-        return $this->belongsToMany(Media::class)->withTimestamps();
+        return $this->belongsToMany(Image::class)->withTimestamps();
     }
 
     /**
@@ -82,36 +83,39 @@ class ImageStyle extends Entity
     }
 
     /**
-     * Returns the pivot of the relationship with a media
+     * Returns the pivot of the relationship with a image
      * 
-     * @param  Media $media
+     * @param Image $image
+     * 
      * @return Illuminate\Database\Eloquent\Relations\Pivot
      */
-    protected function getPivotWithMedia(Media $media)
+    protected function getPivotWithMedia(Image $image)
     {
-        return $media->image_styles()->wherePivot('image_style_id', '=', $this->id)->get()->first()->pivot;
+        return $image->image_styles()->wherePivot('image_style_id', '=', $this->id)->get()->first()->pivot;
     }
 
     /**
-     * Does this style exist for a media
+     * Does this style exist for a image
      * 
-     * @param  Media $media
+     * @param Image $image
+     * 
      * @return bool
      */
-    public function existsForMedia(Media $media)
+    public function existsForMedia(Image $image)
     {
-        return $media->image_styles->contains($this);
+        return $image->image_styles->contains($this);
     }
 
     /**
-     * Image path for this style and a media
+     * Image path for this style and a image
      * 
-     * @param  Media $media
+     * @param Image $image
+     * 
      * @return string
      */
-    protected function imagePath(Media $media)
+    protected function stylePath(Image $image)
     {
-        return config('media.folder').'/'.$this->getFolder().'/'.$media->filename;
+        return config('media.folder').'/'.$this->getFolder().'/'.$image->filename;
     }
 
     /**
@@ -125,14 +129,15 @@ class ImageStyle extends Entity
     }
 
     /**
-     * Does the image exists for this style and a media
+     * Does the image exists for this style and a image
+     *
+     * @param Image $image
      * 
-     * @param  Media $media
      * @return bool
      */
-    public function fileExists(Media $media)
+    public function fileExists(Image $image)
     {
-        return $media->getDisk()->exists($this->imagePath($media));
+        return $image->getDisk()->exists($this->stylePath($image));
     }
 
     /**
@@ -140,49 +145,49 @@ class ImageStyle extends Entity
      */
     public function deleteImages()
     {
-        foreach ($this->medias as $media) {
-            $this->deleteImage($media);
+        foreach ($this->images as $image) {
+            $this->deleteImage($image);
         }
     }
 
     /**
-     * Deletes an image for a media
+     * Deletes an image for a image
      * 
-     * @param Media $media
+     * @param Image $image
      */
-    public function deleteImage(Media $media)
+    public function deleteImage(Image $image)
     {
-        $path = $this->imagePath($media);
-        $media->getDisk()->delete($path);
+        $path = $this->stylePath($image);
+        $image->getDisk()->delete($path);
     }
 
     /**
      * Has this style image being generated before this style was updated
      * 
-     * @param  Media $media
+     * @param  Image $image
      * @return boolean
      */
-    protected function isOutdated(Media $media)
+    protected function isOutdated(Image $image)
     {
         $thisTime = $this->updated_at->timestamp;
-        $mediaTime = $this->getPivotWithMedia($media)->updated_at->timestamp;
+        $mediaTime = $this->getPivotWithMedia($image)->updated_at->timestamp;
 
         return ($thisTime > $mediaTime);
     }
 
     /**
-     * Url for this style for a media.
+     * Url for this style for a image.
      * Will create the image if it doesn't exist
      * 
-     * @param  Media $media
+     * @param  Image $image
      * @return string
      */
-    public function url(Media $media)
+    public function url(Image $image)
     {
-        if(!$this->existsForMedia($media) or $this->isOutdated($media)) {
-            $this->createImage($media);
+        if (!$this->existsForMedia($image) or $this->isOutdated($image)) {
+            $this->createImage($image);
         }
-        return $media->getDisk()->url($this->imagePath($media));
+        return $image->getDisk()->url($this->stylePath($image));
     }
 
     /**
@@ -192,38 +197,38 @@ class ImageStyle extends Entity
      */
     public function applyTransformations(string $file)
     {
-        foreach($this->getTransformations() as $transformation){
+        foreach ($this->getTransformations() as $transformation) {
             $transformation->process($file);
         }
     }
 
     /**
-     * Create an image for this style and a media.
+     * Create an image for this style and a image.
      * Returns the relative path of the created image
      * 
-     * @param  Media $media
+     * @param  Image $image
      * @return string|null
      */
-    public function createImage(Media $media)
+    public function createImage(Image $image)
     {
-        if(!$media->fileExists()) {
+        if (!$image->fileExists()) {
             return;
         }
         //move the image to the temp disk
-        $tmpName = $media->copyToTemporaryDisk();
+        $tmpName = $image->copyToTemporaryDisk();
         $tmpFile = temp_path($tmpName);
         //apply transformations
         $this->applyTransformations($tmpFile);
         //move image from temp disk to destination disk
         $target = config('media.folder').'/'.$this->getFolder();
-        $media->getDisk()->putFileAs($target, new File($tmpFile), $media->filename);
+        $image->getDisk()->putFileAs($target, new File($tmpFile), $image->filename);
         //delete image from temp disk
         \Storage::disk('tmp')->delete($tmpName);
-        //attach media to image style
-        $this->medias()->detach($media);
-        $this->medias()->attach($media);
-        $media->load('image_styles');
+        //attach image to image style
+        $this->images()->detach($image);
+        $this->images()->attach($image);
+        $image->load('image_styles');
 
-        return $target.'/'.$media->filename;
+        return $target.'/'.$image->filename;
     }
 }

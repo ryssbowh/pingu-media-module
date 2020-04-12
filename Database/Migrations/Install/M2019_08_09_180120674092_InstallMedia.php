@@ -29,6 +29,7 @@ class M2019_08_09_180120674092_InstallMedia extends Migration
         Schema::create(
             'media', function (Blueprint $table) {
                 $table->increments('id');
+                $table->string('class');
                 $table->string('name');
                 $table->string('disk');
                 $table->string('filename');
@@ -52,12 +53,12 @@ class M2019_08_09_180120674092_InstallMedia extends Migration
         );
 
         Schema::create(
-            'image_style_media', function (Blueprint $table) {
+            'image_image_style', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('image_style_id')->unsigned()->index();
                 $table->foreign('image_style_id')->references('id')->on('image_styles')->onDelete('cascade');
-                $table->integer('media_id')->unsigned()->index();
-                $table->foreign('media_id')->references('id')->on('media')->onDelete('cascade');
+                $table->integer('image_id')->unsigned()->index();
+                $table->foreign('image_id')->references('id')->on('media')->onDelete('cascade');
                 $table->timestamps();
             }
         );
@@ -70,7 +71,7 @@ class M2019_08_09_180120674092_InstallMedia extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('image_style_media');
+        Schema::dropIfExists('image_image_style');
         Schema::dropIfExists('media');
         Schema::dropIfExists('image_styles');
         Schema::dropIfExists('media_types');
