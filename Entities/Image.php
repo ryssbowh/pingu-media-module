@@ -17,7 +17,7 @@ class Image extends BundledEntity implements MediaContract
 
     public $fillable = ['alt'];
 
-    protected $with = ['image_styles'];
+    // protected $with = ['image_styles'];
 
     protected $touches = ['media'];
 

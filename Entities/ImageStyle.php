@@ -91,7 +91,7 @@ class ImageStyle extends Entity
      */
     protected function getPivotWithMedia(Image $image)
     {
-        return $image->image_styles()->wherePivot('image_style_id', '=', $this->id)->get()->first()->pivot;
+        return $image->image_styles->where('id', $this->id)->first()->pivot;
     }
 
     /**

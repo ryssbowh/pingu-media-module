@@ -74,9 +74,6 @@ class MediaServiceProvider extends ModuleServiceProvider
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(EventServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
-        (new FileBundle)->register();
-        (new ImageBundle)->register();
-        $this->registerEntities($this->entities);
         \Settings::register(new MediaSettings, $this->app);
     }
 
@@ -87,6 +84,9 @@ class MediaServiceProvider extends ModuleServiceProvider
      */
     public function boot()
     {
+        (new FileBundle)->register();
+        (new ImageBundle)->register();
+        $this->registerEntities($this->entities);
         $this->registerTranslations();
         $this->registerConfig();
         $this->loadModuleViewsFrom(__DIR__ . '/../Resources/views', 'media');
