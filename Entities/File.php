@@ -3,7 +3,9 @@
 namespace Pingu\Media\Entities;
 
 use Illuminate\Http\UploadedFile;
+use Pingu\Entity\Contracts\BundleContract;
 use Pingu\Entity\Support\BundledEntity;
+use Pingu\Media\Bundles\FileBundle;
 use Pingu\Media\Contracts\MediaContract;
 use Pingu\Media\Traits\IsMedia;
 
@@ -34,8 +36,16 @@ class File extends BundledEntity implements MediaContract
     /**
      * @inheritDoc
      */
-    public function bundleName(): string
+    public function bundleClass(): string
     {
-        return 'file';
+        return FileBundle::class;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function bundleInstance(): ?BundleContract
+    {
+        return new FileBundle;
     }
 }

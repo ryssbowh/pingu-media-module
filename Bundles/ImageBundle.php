@@ -2,7 +2,7 @@
 
 namespace Pingu\Media\Bundles;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Pingu\Entity\Support\Bundle\ClassBundle;
 use Pingu\Media\Entities\Image;
 use Pingu\Media\Entities\Media;

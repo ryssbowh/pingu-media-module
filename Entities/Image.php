@@ -4,7 +4,9 @@ namespace Pingu\Media\Entities;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\UploadedFile;
+use Pingu\Entity\Contracts\BundleContract;
 use Pingu\Entity\Support\BundledEntity;
+use Pingu\Media\Bundles\ImageBundle;
 use Pingu\Media\Contracts\MediaContract;
 use Pingu\Media\Entities\ImageStyle;
 use Pingu\Media\Traits\IsMedia;
@@ -27,13 +29,21 @@ class Image extends BundledEntity implements MediaContract
             'alt' => $file->getClientOriginalName()
         ]);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function bundleClass(): string
+    {
+        return ImageBundle::class;
+    }
     
     /**
      * @inheritDoc
      */
-    public function bundleName(): string
+    protected function bundleInstance(): ?BundleContract
     {
-        return 'image';
+        return new ImageBundle;
     }
 
     /**

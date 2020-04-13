@@ -2,6 +2,9 @@
 
 @section('inner')
     @foreach($data['values'] as $image)
+        @if(!$image)
+            @continue
+        @endif
         <div class="field-item">
             @if($options->linkTo != 'no')
                 <a href="{{ $options->getLink($entity, $image) }}">
