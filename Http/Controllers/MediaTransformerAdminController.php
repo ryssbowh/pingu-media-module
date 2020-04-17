@@ -19,45 +19,6 @@ class MediaTransformerAdminController extends BaseController
         return ['url' => $entity->uris()->make('store', $style, adminPrefix())];
     }
 
-    protected function getUpdateUri(Entity $entity)
-    {
-        return ['url' => $entity->uris()->make('update', $entity, adminPrefix())];
-    }
-
-    protected function getDeleteUri(Entity $entity)
-    {
-        return ['url' => $entity->uris()->make('delete', $entity, adminPrefix())];
-    }
-
-    protected function onCreateFormCreated(Form $form, Entity $entity)
-    {
-        $with = [
-            'form' => $form,
-            'entity' => $entity,
-        ];
-        return view('entity::createEntity')->with($with);
-    }
-
-    protected function onEditFormCreated(Form $form, Entity $entity)
-    {
-        $with = [
-            'form' => $form,
-            'entity' => $entity,
-        ];
-        return view('entity::editEntity')->with($with);
-    }
-
-    public function confirmDelete(Entity $entity)
-    {
-        $form = $entity->forms()->delete([$this->getDeleteUri($entity)]);
-
-        $with = [
-            'form' => $form, 
-            'entity' => $entity
-        ];
-        return view('entity::deleteEntity')->with($with);
-    }
-
     /**
      * @inheritDoc
      */

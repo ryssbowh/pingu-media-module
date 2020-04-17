@@ -33,7 +33,7 @@ class M2019_08_09_180120674092_InstallMedia extends Migration
                 $table->string('name');
                 $table->string('disk');
                 $table->string('filename');
-                $table->integer('size');
+                $table->unsignedInteger('size');
                 $table->integer('media_type_id')->unsigned();
                 $table->foreign('media_type_id')->references('id')->on('media_types')->onDelete('cascade');
                 $table->timestamps();
