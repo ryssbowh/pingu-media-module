@@ -9,7 +9,7 @@ use Pingu\Entity\Support\Entity;
 use Pingu\Forms\Contracts\FormRepositoryContract;
 use Pingu\Media\Entities\Forms\MediaForms;
 use Pingu\Media\Entities\MediaType;
-use Pingu\Media\Entities\Policies\MediaPolicy;
+use Pingu\Media\Http\Contexts\EditMediaContext;
 use Pingu\Media\Support\MediaCollection;
 
 class Media extends Entity
@@ -23,6 +23,8 @@ class Media extends Entity
     protected $notFilterable = ['disk', 'size', 'filename'];
 
     protected $with = ['instance'];
+
+    public static $routeContexts = [EditMediaContext::class];
     
     /**
      * @inheritDoc
@@ -35,9 +37,9 @@ class Media extends Entity
     /**
      * @inheritDoc
      */
-    public function forms(): FormRepositoryContract
+    public static function forms(): FormRepositoryContract
     {
-        return new MediaForms($this);
+        return new MediaForms;
     }
     
     /**
@@ -46,14 +48,6 @@ class Media extends Entity
     public function newCollection(array $models = [])
     {
         return new MediaCollection($models);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPolicy(): string
-    {
-        return MediaPolicy::class;
     }
 
     /**

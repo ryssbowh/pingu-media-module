@@ -5,7 +5,7 @@ namespace Pingu\Media\Entities;
 use Pingu\Core\Traits\Models\HasMachineName;
 use Pingu\Entity\Support\Entity;
 use Pingu\Media\Entities\Image;
-use Pingu\Media\Entities\Policies\MediaTypePolicy;
+use Pingu\Media\Http\Contexts\EditMediaTypeContext;
 
 class MediaType extends Entity
 {
@@ -23,6 +23,10 @@ class MediaType extends Entity
 
     public $adminListFields = ['name', 'icon'];
 
+    public static $routeContexts = [EditMediaTypeContext::class];
+
+    public $descriptiveField = 'name';
+
     public static function boot()
     {
         parent::boot();
@@ -39,9 +43,9 @@ class MediaType extends Entity
     /**
      * @inheritDoc
      */
-    public function getPolicy(): string
+    public function getRouteKeyName()
     {
-        return MediaTypePolicy::class;
+        return 'machineName';
     }
 
     /**

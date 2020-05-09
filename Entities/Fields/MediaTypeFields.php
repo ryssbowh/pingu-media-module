@@ -38,4 +38,21 @@ class MediaTypeFields extends BaseFieldRepository
             )
         ];
     }
+
+    protected function rules(): array
+    {
+        return [
+            'icon' => 'file',
+            'extensions' => 'required|regex:/^\w+(,\w+)*$/i|unique_extensions:'.$this->object->id,
+            'name' => 'required',
+            'machineName' => 'required|unique:media_types,machineName,'.$this->object->id
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+
+        ];
+    }
 }

@@ -13,7 +13,7 @@ class ImageStyleAdminController extends AdminEntityController
 {
     public function transformations(ImageStyle $style)
     {
-        \ContextualLinks::addFromObject($style);
+        \ContextualLinks::addObjectActions($style);
         $transformations = $style->getTransformations();
         $addForm = new AddTransformerForm($style);
         return view('pages.media.indexTransformations')->with(
@@ -24,10 +24,5 @@ class ImageStyleAdminController extends AdminEntityController
             'patchUri' => MediaTransformer::uris()->make('patch', $style, adminPrefix())
             ]
         );
-    }
-
-    protected function afterEditFormCreated(Form $form, Entity $entity)
-    {
-        $form->getElement('machineName')->option('disabled', true);
     }
 }

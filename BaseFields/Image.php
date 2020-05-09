@@ -76,14 +76,6 @@ class Image extends BaseField implements UploadsMedias
     /**
      * @inheritDoc
      */
-    public function definesRelation()
-    {
-        return 'single';
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function castToFormValue($value)
     {
         if ($value) {

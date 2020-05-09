@@ -2,10 +2,10 @@
 
 namespace Pingu\Media\Entities\Uris;
 
-use Pingu\Entity\Support\Uris\BaseEntityUris;
+use Pingu\Core\Support\Uris\BaseModelUris;
 use Pingu\Media\Entities\ImageStyle;
 
-class MediaTransformerUris extends BaseEntityUris
+class MediaTransformerUris extends BaseModelUris
 {
     protected function uris(): array
     {

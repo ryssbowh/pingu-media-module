@@ -30,6 +30,7 @@ class MediaAdminController extends BaseController
      */
     protected function onStoreSuccess(MediaContract $media)
     {
+        \Notify::success($media::friendlyName().' created');
         return redirect()->route('media.admin.index');
     }
 
@@ -43,23 +44,5 @@ class MediaAdminController extends BaseController
         }
         \Notify::danger('Error while creating '.Media::friendlyName());
         return back();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function afterStoreSuccess(MediaContract $media)
-    {
-        \Notify::success($media::friendlyName().' created');
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function afterEditFormCreated(Form $form, Entity $entity)
-    {
-        $form->getElement('filename')->option('disabled', true);
-        $form->getElement('size')->option('disabled', true);
-        $form->getElement('disk')->option('disabled', true);
     }
 }

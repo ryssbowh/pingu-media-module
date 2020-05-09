@@ -42,4 +42,18 @@ class MediaFields extends BaseFieldRepository
             )
         ];
     }
+
+    protected function rules(): array
+    {
+        return [
+            'name' => 'string|required'
+        ];  
+    }
+
+    protected function messages(): array
+    {
+        return [
+
+        ];
+    }
 }

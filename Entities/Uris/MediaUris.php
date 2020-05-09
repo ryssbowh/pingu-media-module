@@ -2,9 +2,9 @@
 
 namespace Pingu\Media\Entities\Uris;
 
-use Pingu\Entity\Support\Uris\BaseEntityUris;
+use Pingu\Core\Support\Uris\BaseModelUris;
 
-class MediaUris extends BaseEntityUris
+class MediaUris extends BaseModelUris
 {
     public function uris(): array
     {

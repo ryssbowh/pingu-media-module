@@ -2,6 +2,7 @@
 
 namespace Pingu\Media\Entities;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Pingu\Core\Entities\BaseModel;
 use Pingu\Core\Traits\Models\HasWeight;
 use Pingu\Entity\Support\Entity;
@@ -9,7 +10,6 @@ use Pingu\Forms\Contracts\FormRepositoryContract;
 use Pingu\Forms\Support\Fields\TextInput;
 use Pingu\Media\Entities\Forms\MediaTransformerForms;
 use Pingu\Media\Entities\ImageStyle;
-use Pingu\Media\Entities\Policies\MediaTransformerPolicy;
 
 class MediaTransformer extends Entity
 {
@@ -40,26 +40,34 @@ class MediaTransformer extends Entity
         );
     }
 
-    public function forms(): FormRepositoryContract
+    public static function forms(): FormRepositoryContract
     {
-        return new MediaTransformerForms($this);
+        return new MediaTransformerForms;
     }
 
-    public function getPolicy(): string
-    {
-        return MediaTransformerPolicy::class;
-    }
-
+    /**
+     * @inheritDoc
+     */
     public static function friendlyName(): string
     {
         return 'Media Transformation';
     }
 
+    /**
+     * Image style relation
+     * 
+     * @return BelongsTo
+     */
     public function image_style()
     {
         return $this->belongsTo(ImageStyle::class);
     }
 
+    /**
+     * Instance of this transformer
+     * 
+     * @return 
+     */
     public function instance()
     {
         $class = $this->class;

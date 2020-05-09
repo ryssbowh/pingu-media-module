@@ -20,4 +20,20 @@ class ImageStyleFields extends BaseFieldRepository
             )
         ];
     }
+
+    protected function rules(): array
+    {
+        return [
+            'name' => 'required',
+            'description' => 'string',
+            'machineName' => 'required|unique:image_styles,machineName'
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+
+        ];
+    }
 }

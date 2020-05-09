@@ -6,9 +6,9 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Filesystem\FilesystemContract;
-use Pingu\Core\Support\Actions;
+use Pingu\Core\Contracts\ActionRepositoryContract;
 use Pingu\Core\Support\Routes;
-use Pingu\Core\Support\Uris;
+use Pingu\Core\Support\Uris\Uris;
 use Pingu\Media\Entities\Media;
 use Pingu\Media\Entities\MediaType;
 use Pingu\Media\Entities\Policies\MediaPolicy;
@@ -34,7 +34,15 @@ trait IsMedia
     /**
      * @inheritDoc
      */
-    public static function actions(): Actions
+    public function shouldRegisterRouteSlug(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function actions(): ActionRepositoryContract
     {
         return \Actions::get(Media::class);
     }
@@ -105,7 +113,8 @@ trait IsMedia
      */
     public function isDirty($attributes = null)
     {
-        return (parent::isDirty() or $this->media->isDirty());
+        $attributes = is_array($attributes) ? $attributes : func_get_args();
+        return (parent::isDirty($attributes) or $this->media->isDirty($attributes));
     }
 
     /**
@@ -151,7 +160,7 @@ trait IsMedia
      */
     public function toArray(): array
     {
-        return array_merge(parent::toArray(), $this->media->toArray());
+        return array_merge(parent::toArray(), $this->media ? $this->media->toArray() : []);
     }
 
     /**
@@ -252,16 +261,5 @@ trait IsMedia
         $tmpName = uniqid('image-', true).'.'.$this->getExtension();
         \Storage::disk('tmp')->put($tmpName, $this->getContent());
         return $tmpName;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function register()
-    {
-        $this->fireModelEvent('registering');
-        \Entity::registerEntity($this);
-        \Policies::register($this, $this->getPolicy());
-        $this->fireModelEvent('registered');
     }
 }

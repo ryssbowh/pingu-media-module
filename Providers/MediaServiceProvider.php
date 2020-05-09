@@ -42,10 +42,7 @@ class MediaServiceProvider extends ModuleServiceProvider
         File::class,
         MediaTypeModel::class,
         ImageStyleModel::class,
-        MediaTransformer::class
-    ];
-
-    protected $bundleFields = [
+        MediaTransformer::class,
         FieldImage::class,
         FieldFile::class
     ];
@@ -97,8 +94,8 @@ class MediaServiceProvider extends ModuleServiceProvider
         \Media::registerTransformer(Resize::class);
         \Media::registerTransformer(Orientate::class);
         \Infos::registerProvider(MediaInfo::class);
-        \Field::registerBundleFields($this->bundleFields);
         \FieldDisplayer::register($this->displayers);
+        MediaModel::registerUris();
         ImageField::register();
         FileField::register();
         MediaModel::observe(MediaObserver::class);

@@ -8,8 +8,8 @@ use Pingu\Entity\Support\Entity;
 use Pingu\Media\Entities\Image;
 use Pingu\Media\Entities\Media;
 use Pingu\Media\Entities\MediaTransformer;
-use Pingu\Media\Entities\Policies\ImageStylePolicy;
 use Pingu\Media\Exceptions\MediaStyleException;
+use Pingu\Media\Http\Contexts\EditImageStyleContext;
 
 class ImageStyle extends Entity
 {
@@ -22,6 +22,10 @@ class ImageStyle extends Entity
     ];
 
     public $adminListFields = ['name', 'description'];
+
+    public static $routeContexts = [EditImageStyleContext::class];
+
+    public $descriptiveField = 'name';
 
     public static function boot()
     {
@@ -43,9 +47,12 @@ class ImageStyle extends Entity
         });
     }
 
-    public function getPolicy(): string
+    /**
+     * @inheritDoc
+     */
+    public function getRouteKeyName()
     {
-        return ImageStylePolicy::class;
+        return 'machineName';
     }
 
     /**

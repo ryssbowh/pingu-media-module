@@ -13,4 +13,18 @@ class MediaTransformerFields extends BaseFieldRepository
             new Integer('weight')
         ];
     }
+
+    protected function rules(): array
+    {
+        return [
+            'weight' => 'integer'
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+
+        ];
+    }
 }

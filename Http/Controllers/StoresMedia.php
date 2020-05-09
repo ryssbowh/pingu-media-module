@@ -32,16 +32,8 @@ trait StoresMedia
         return \Media::uploadFile($validated['file']);
     }
 
-    protected function beforeStore()
-    {
-    }
-
     abstract protected function onStoreFailure(\Exception $e);
 
     abstract protected function onStoreSuccess(Media $media);
-
-    protected function afterStoreSuccess(Media $media)
-    {
-    }
     
 }

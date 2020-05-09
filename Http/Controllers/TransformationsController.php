@@ -20,6 +20,8 @@ trait TransformationsController
     }
     use EditsEntity, DeletesEntity, PatchesEntity;
 
+    protected function onEditFormCreated(){}
+
     public function create()
     {
         $style = $this->routeParameter(ImageStyle::routeSlug());
@@ -31,6 +33,8 @@ trait TransformationsController
         }
         return $this->traitCreate();
     }
+
+    protected function onCreateFormCreated(Form $form, Entity $entity){}
 
     protected function getCreateForm(Entity $entity)
     {
@@ -67,45 +71,4 @@ trait TransformationsController
         $transformer->save();
         return $this->onUpdateSuccess($transformer);
     }
-
-    // protected function performStore(ImageStyle $style, array $options, string $transformerClass)
-    // {
-    //     $transformer = new MediaTransformer;
-    //     $transformer->options = $options;
-    //     $transformer->class = $transformerClass;
-    //     $transformer->weight = MediaTransformer::getNextWeight(['image_style_id' => $style->id]);
-    //     $transformer->image_style()->associate($style);
-    //     $transformer->save();
-    //     return $transformer;
-    // }
-
-    // public function update(MediaTransformer $transformer, EditTransformerOptionsRequest $request)
-    // {
-    //     $transformer->options = $request->validated();
-    //     $transformer->save();
-    //     return $this->onUpdateSuccess($transformer);
-    // }
-
-    // public function create(ImageStyle $style)
-    // {
-    //     $slug = $this->request->input('transformer');
-    //     $transformer = \Media::getTransformer($slug);
-    //     if($transformer::hasOptions()){
-    //         $form = new AddTransformerOptionsForm(new $transformer, $style);
-    //         return $this->onAddOptionsFormCreated($form);
-    //     }
-    //     $model = $this->performStore($style, [], $transformer);
-    //     return $this->onStoreSuccess($model);
-    // }
-
-    // public function edit(MediaTransformer $transformer)
-    // {
-    //     $instance = $transformer->instance();
-    //     if($instance::hasOptions()){
-    //         $form = new EditTransformerOptionsForm($instance);
-    //         return $this->onEditOptionsFormCreated($form, $transformer);
-    //     }
-    //     throw new HttpException(500, "Congratulations, you've ended up nowhere !");
-    // }
-
 }
